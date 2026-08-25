@@ -181,6 +181,10 @@ class Main:
     destroyables_list = []  # whole missiles, aircrafts, ships used by HUD radar
     destroyables_items = {} # items stored by their names
 
+    # current task label per machine name, set by an external commander through
+    # the network (SET_PLANE_TASK); drawn in the 3D view above each plane.
+    plane_task_labels = {}
+
     font_program = None
     title_font_path = "font/destroy.ttf"
     hud_font_path = "font/Furore.otf"
@@ -1112,6 +1116,24 @@ class Main:
             dm.update_kinetics(dts)
             cls.display_machine_vectors(dm)
             cls.display_flight_prediction(dm)
+            cls.display_plane_task(dm)
+
+    @classmethod
+    def display_plane_task(cls, machine):
+        """Draw the task label assigned by the external commander (SET_PLANE_TASK)
+        above the machine, green for allies / red for enemies."""
+        if cls.flag_renderless:
+            return
+        task = cls.plane_task_labels.get(machine.name)
+        if not task or machine.wreck or machine.flag_crashed:
+            return
+        pos = machine.get_position()
+        if machine.nationality == 1:
+            color = hg.Color(0.3, 1.0, 0.5)
+        else:
+            color = hg.Color(1.0, 0.45, 0.3)
+        Overlays.add_text2D_from_3D_position("%s %s" % (machine.name, task),
+                                             pos, hg.Vec2(0, 0.03), 0.014, color)
 
     @classmethod
     def display_flight_prediction(cls, machine):

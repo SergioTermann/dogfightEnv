@@ -43,6 +43,8 @@ def init_server(main_):
 		"UPDATE_SCENE": update_scene,
 		"DISPLAY_VECTOR": display_vector,
 		"DISPLAY_2DTEXT": display_2DText,
+		"SET_PLANE_TASK": set_plane_task,
+		"CLEAR_PLANE_TASKS": clear_plane_tasks,
 
 		# Machines
 		"GET_MACHINE_MISSILES_LIST": get_machine_missiles_list,
@@ -216,6 +218,17 @@ def display_2DText(args):
 		Overlays.add_text2D(args["text"], position, args["size"], color)
 	elif flag_print_log:
 		print("Display 2d Text ERROR - Client Update Mode must be TRUE")
+
+
+def set_plane_task(args):
+	# External commander (e.g. the LLM mission commander) labels a plane with its
+	# current task; drawn in the 3D view next to the machine every frame.
+	machine = main.destroyables_items[args["machine_id"]]
+	main.plane_task_labels[args["machine_id"]] = str(args["task"])
+
+
+def clear_plane_tasks(args):
+	main.plane_task_labels.clear()
 
 
 def set_timestep(args):

@@ -150,9 +150,22 @@ hg.ResetClock()
 # ------------------- Setup state:
 print('line146 ___haohsuai___start setup state')
 if "auto_network" in sys.argv:
-    # Automated testing: skip the menu and start the "Network mode" mission directly
-    import Missions
-    Missions.mission_id = 1
+    # Automated testing: skip the menu and start the "Network mode" mission directly.
+    # Optional "mission=N" argument picks the network mission (1=1v1, 2=2v2, 3=3v3).
+    # NOTE: "import Missions" gives the MODULE; the mission list/id live on the
+    # Missions CLASS inside it (states.py does "from Missions import *").
+    import Missions as MissionsModule
+    MissionsModule.Missions.mission_id = 1
+    for arg in sys.argv:
+        if arg.startswith("mission="):
+            try:
+                mid = int(arg.split("=", 1)[1])
+                # auto_network only makes sense for the network missions (1=1v1, 2=2v2, 3=3v3)
+                if 1 <= mid <= 3:
+                    MissionsModule.Missions.mission_id = mid
+            except ValueError:
+                pass
+    print("Auto network mission id:", MissionsModule.Missions.mission_id)
     Main.current_state = states.init_main_phase()
 else:
     Main.current_state = states.init_menu_phase()

@@ -1,0 +1,17 @@
+{
+    "host": "192.168.1.103",
+    "port": 50888,
+    "side": "ennemies",
+    "engine": "rule",
+    "decision_period_s": 10,
+    "poll_interval_s": 0.5,
+    "missiles_poll_s": 5,
+    "blue_ia": false,
+    "llm": {
+        "api_base": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+        "api_key": "",
+        "model": "glm-4-flash",
+        "temperature": 0.2,
+        "timeout_s": 25
+    }
+}

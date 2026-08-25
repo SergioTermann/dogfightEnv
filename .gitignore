@@ -9,3 +9,6 @@ __pycache__/
 dogfight_sandbox_hg2/source/assets/
 dogfight_sandbox_hg2/source/assets_compiled/
 .zcode/
+
+# LLM commander runtime artifacts
+llm_commander/decisions.jsonl

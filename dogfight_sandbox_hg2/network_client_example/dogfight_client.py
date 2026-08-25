@@ -101,6 +101,15 @@ def set_target_id(machine_id, target_id):
 	socket_lib.send_message(str.encode(json.dumps({"command": "SET_TARGET_ID", "args": {"machine_id": machine_id, "target_id": target_id}})))
 
 
+def set_plane_task(machine_id, task):
+	# commander task label drawn in the sandbox 3D view above the plane
+	socket_lib.send_message(str.encode(json.dumps({"command": "SET_PLANE_TASK", "args": {"machine_id": machine_id, "task": task}})))
+
+
+def clear_plane_tasks():
+	socket_lib.send_message(str.encode(json.dumps({"command": "CLEAR_PLANE_TASKS", "args": {}})))
+
+
 def get_health(machine_id):
 	socket_lib.send_message(str.encode(json.dumps({"command": "GET_HEALTH", "args": {"machine_id": machine_id}})))
 	state = json.loads((socket_lib.get_answer()).decode())
