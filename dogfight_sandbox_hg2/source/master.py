@@ -3,6 +3,7 @@
 import harfang as hg
 from Machines import *
 from MachineDevice import *
+import jsbsim_flight_model as JSBSimFM
 from aircraft_miuss import *
 from aircraft_tfx import *
 from aircraft_f16 import *
@@ -1110,6 +1111,38 @@ class Main:
         for dm in Destroyable_Machine.update_list:
             dm.update_kinetics(dts)
             cls.display_machine_vectors(dm)
+            cls.display_flight_prediction(dm)
+
+    @classmethod
+    def display_flight_prediction(cls, machine):
+        """Draw each JSBSim aircraft's predicted trajectory in the 3D view:
+        a fading polyline plus cross markers with '+Ns' labels every 5 seconds."""
+        fm = getattr(machine, 'jsbsim_model', None)
+        if (fm is None or not JSBSimFM.PREDICT_ENABLED or machine.wreck or machine.flag_crashed
+                or not machine.activated or cls.flag_renderless):
+            return
+        pts = fm.predict_path(JSBSimFM.PREDICT_HORIZON_S, JSBSimFM.PREDICT_STEPS)
+        if len(pts) < 2:
+            return
+        if machine.nationality == 1:
+            color = hg.Color(0.2, 1.0, 0.3)
+        else:
+            color = hg.Color(1.0, 0.25, 0.2)
+        horizon = JSBSimFM.PREDICT_HORIZON_S
+        step_s = horizon / (len(pts) - 1)
+        cam_pos = cls.get_current_camera().GetTransform().GetPos()
+        for i in range(len(pts) - 1):
+            f = 1.0 - 0.45 * i / (len(pts) - 1)  # gentle fade toward the end of the horizon
+            c = hg.Color(color.r * f, color.g * f, color.b * f)
+            Overlays.add_line(pts[i], pts[i + 1], c, c)
+        mark_step = max(1, int(round(5.0 / step_s)))  # marker every 5 s
+        for k in range(mark_step, len(pts), mark_step):
+            p = pts[k]
+            s = max(1.0, hg.Len(p - cam_pos)) * 0.012  # ~constant angular size at any distance
+            Overlays.add_line(p + hg.Vec3(-s, 0, -s), p + hg.Vec3(s, 0, s), color, color)
+            Overlays.add_line(p + hg.Vec3(-s, 0, s), p + hg.Vec3(s, 0, -s), color, color)
+            Overlays.add_text2D_from_3D_position("%s +%ds" % (machine.name, int(k * step_s + 0.5)),
+                                                 p, hg.Vec2(0, 0.006), 0.014, color)
 
     @classmethod
     def clear_display_lists(cls):

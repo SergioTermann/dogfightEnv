@@ -47,6 +47,7 @@ if json_script != "":
 # Flight dynamics engine switch: "jsbsim" (6-DOF, default) or "legacy" (original simplified model)
 import jsbsim_flight_model
 jsbsim_flight_model.configure(script_parameters.get("Physics"))
+jsbsim_flight_model.configure_prediction(script_parameters.get("FlightPrediction"))
 if "jsbsim_debug" in sys.argv:
     jsbsim_flight_model.DEBUG = True
 print("Physics engine:", "jsbsim" if jsbsim_flight_model.USE_JSBSIM else "legacy")

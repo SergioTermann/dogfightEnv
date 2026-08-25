@@ -70,7 +70,7 @@ ALPHA_CMD_MIN = -6.0      # AoA command clamp (push)
 ALPHA_CMD_MAX = 19.0      # AoA command clamp (pull, below stall)
 ALPHA_DECAY = 0.35        # 1/s: AoA offset decays when the pitch stick is neutral
 K_ALPHA = 0.08            # elevator per deg of AoA error
-K_Q = 2.2                 # elevator per rad/s pitch rate
+K_Q = 1.6                 # elevator per rad/s pitch rate (the f16.xml FCS also damps)
 K_TRIM = 0.006            # slow integral on AoA error (steady-state elevator)
 TRIM_MAX = 0.3            # elevator trim integrator clamp
 GAMMA_DAMP_DEG = 10.0     # flight-path damping deadband: zooms beyond this are opposed
@@ -98,6 +98,12 @@ MIN_CONTROLLABLE_ALT_M = 50.0
 USE_JSBSIM = True
 DEBUG = False  # per-frame diagnostics to stdout
 
+# Flight-path prediction overlay (config.json "FlightPrediction"): a kinematic
+# rollout of the current state drawn in the 3D view by Main.display_flight_prediction.
+PREDICT_ENABLED = True
+PREDICT_HORIZON_S = 10.0
+PREDICT_STEPS = 20
+
 
 def configure(physics_config):
     """Apply the config.json "Physics" section (engine, origin)."""
@@ -105,6 +111,16 @@ def configure(physics_config):
     if not physics_config:
         return
     USE_JSBSIM = str(physics_config.get('engine', 'jsbsim')).lower() == 'jsbsim'
+
+
+def configure_prediction(prediction_config):
+    """Apply the config.json "FlightPrediction" section."""
+    global PREDICT_ENABLED, PREDICT_HORIZON_S, PREDICT_STEPS
+    if not prediction_config:
+        return
+    PREDICT_ENABLED = bool(prediction_config.get('enabled', True))
+    PREDICT_HORIZON_S = float(prediction_config.get('horizon_s', 10.0))
+    PREDICT_STEPS = max(4, int(prediction_config.get('steps', 20)))
 
 
 def jsbsim_available():
@@ -132,6 +148,9 @@ class JSBSimFlightModel:
         self._alpha_cmd_deg = 0.0             # SAS AoA offset (integrated from pitch stick)
         self._roll_cmd_deg = 0.0
         self._elev_trim = 0.0                 # slow integrator canceling the untrimmed moment
+        self._prev_speed_ms = 0.0             # for the acceleration estimate
+        self._last_rates = (0.0, 0.0, 0.0)    # (q, p, r) rad/s, measured across the last FDM step
+        self._pred_state = None               # cached state for predict_path()
         self._ready = False
 
     # ------------------------------------------------------------------ helpers
@@ -235,6 +254,7 @@ class JSBSimFlightModel:
         self._alpha_cmd_deg = 0.0
         self._roll_cmd_deg = roll
         self._elev_trim = 0.0
+        self._last_rates = (0.0, 0.0, 0.0)  # state jump invalidates rate estimates
         self._last_speed_ms = speed
         self._last_vy = hg.Len(v_move) * math.sin(math.radians(gamma)) if hg.Len(v_move) > 1.0 else 0.0
         self._prev_pos = self._current_world_position()
@@ -245,6 +265,44 @@ class JSBSimFlightModel:
         lon = float(self.fdm.get_property_value('position/long-gc-deg'))
         alt = float(self.fdm.get_property_value('position/h-sl-ft')) * FT_TO_M
         return self._world_from_geodetic(lat, lon, alt)
+
+    # ------------------------------------------------------------------ trajectory prediction
+
+    def predict_path(self, horizon_s=10.0, steps=20):
+        """Kinematic rollout of the current flight state for the HUD overlay.
+
+        Propagates position/speed/heading/flight-path with the CURRENT turn rate,
+        pitch rate and acceleration, each decaying exponentially (a held turn
+        keeps turning, but the model doesn't pretend to know future stick inputs).
+        Returns world-space points, starting at the current position."""
+        if not self._ready or self._pred_state is None:
+            return []
+        pos, speed, hdg, theta, phi, turn_r, pitch_r, accel = self._pred_state
+        alpha_deg = float(self.fdm.get_property_value('aero/alpha-deg'))
+        gamma0 = max(-80.0, min(80.0, theta - alpha_deg))
+        tau_turn, tau_pitch, tau_acc = 4.0, 1.5, 3.0
+        step = horizon_s / steps
+
+        def decayed_integral(rate, tau, t0, t1):
+            return rate * tau * (math.exp(-t0 / tau) - math.exp(-t1 / tau))
+
+        pts = [hg.Vec3(pos.x, pos.y, pos.z)]
+        p = pts[0]
+        gamma = gamma0
+        for i in range(steps):
+            t0, t1 = i * step, (i + 1) * step
+            hdg_i = hdg + turn_r * tau_turn * (1.0 - math.exp(-t1 / tau_turn))
+            gamma = max(-70.0, min(70.0, gamma0 + pitch_r * tau_pitch * (1.0 - math.exp(-t1 / tau_pitch))))
+            speed_i = max(40.0, speed + accel * tau_acc * (1.0 - math.exp(-t1 / tau_acc)))
+            g, h = math.radians(gamma), math.radians(hdg_i)
+            v = hg.Vec3(math.cos(g) * math.sin(h), math.sin(g), math.cos(g) * math.cos(h)) * (speed_i * step)
+            p = p + v
+            if p.y < 1.0:  # predicted ground contact: run level from here on
+                p.y = 1.0
+                gamma0 = 0.0
+                gamma = 0.0
+            pts.append(hg.Vec3(p.x, p.y, p.z))
+        return pts
 
     # ------------------------------------------------------------------ per-frame update
 
@@ -259,20 +317,14 @@ class JSBSimFlightModel:
         wreck_factor = physics_parameters.get('health_wreck_factor', 1.0)
         authority = wreck_factor  # damage reduces control authority
 
-        # --- rate estimates from Euler finite differences (fixed dt) ---
+        # --- rate estimates: measured across the LAST FDM step (post-run vs pre-run of
+        # the previous frame); a one-frame lag is negligible for damping at 60 Hz ---
         theta = self.fdm.get_property_value('attitude/theta-deg')
         psi = self.fdm.get_property_value('attitude/psi-deg')
         phi = self.fdm.get_property_value('attitude/phi-deg')
-        prev_theta, prev_psi, prev_phi = self._prev_euler
+        theta0, psi0, phi0 = theta, psi, phi
+        q_rate, p_rate, r_rate = self._last_rates
         dt = self.FDM_DT
-        dpsi = (psi - prev_psi + 540.0) % 360.0 - 180.0
-        q_rate = math.radians((theta - prev_theta) / dt)     # + nose up
-        p_rate = math.radians(((phi - prev_phi + 540.0) % 360.0 - 180.0) / dt)  # + roll right
-        r_rate = math.radians(dpsi / dt)                     # + heading increase (right turn)
-        # Euler wrap/singularity can spike the estimates; keep the SAS bounded.
-        q_rate = max(-3.0, min(3.0, q_rate))
-        p_rate = max(-3.0, min(3.0, p_rate))
-        r_rate = max(-3.0, min(3.0, r_rate))
 
         alpha = self.fdm.get_property_value('aero/alpha-deg')
         beta = self.fdm.get_property_value('aero/beta-deg')
@@ -337,7 +389,7 @@ class JSBSimFlightModel:
         speed = max(self.fdm.get_property_value('velocities/vc-kts') * KT_TO_MS, 50.0)
         turn_rate_deg_s = math.degrees(9.81 * math.tan(math.radians(phi)) / speed) if abs(phi) < 80 else 0.0
         # yaw level > 0 = nose right -> rudder-cmd negative (f16: positive = nose left)
-        rudder = -YAW_FF * angular.y * authority + K_R * math.radians(r_rate - turn_rate_deg_s) - K_BETA * beta
+        rudder = -YAW_FF * angular.y * authority + K_R * (r_rate - math.radians(turn_rate_deg_s)) - K_BETA * beta
 
         self.fdm.set_property_value('fcs/elevator-cmd-norm', max(-1.0, min(1.0, elevator)))
         self.fdm.set_property_value('fcs/aileron-cmd-norm', max(-1.0, min(1.0, aileron)))
@@ -391,6 +443,14 @@ class JSBSimFlightModel:
             theta = float(self.fdm.get_property_value('attitude/theta-deg'))
             psi = float(self.fdm.get_property_value('attitude/psi-deg'))
             phi = float(self.fdm.get_property_value('attitude/phi-deg'))
+            self._last_rates = (0.0, 0.0, 0.0)
+
+        # rates actually measured across THIS FDM step (post-run vs pre-run), stored
+        # for the next frame's damping terms and for the trajectory prediction
+        q_new = max(-3.0, min(3.0, math.radians((theta - theta0) / dt)))       # + nose up
+        p_new = max(-3.0, min(3.0, math.radians(((phi - phi0 + 540.0) % 360.0 - 180.0) / dt)))  # + roll right
+        r_new = max(-3.0, min(3.0, math.radians(((psi - psi0 + 540.0) % 360.0 - 180.0) / dt)))  # + right turn
+        self._last_rates = (q_new, p_new, r_new)
 
         heading = psi % 360.0
 
@@ -401,6 +461,12 @@ class JSBSimFlightModel:
         self._last_vy = v_move.y
         self._prev_euler = (theta, psi, phi)
         self._prev_pos = pos
+
+        # cache the kinematic state for the HUD trajectory prediction
+        self._pred_state = (pos, self._last_speed_ms, heading, theta, phi,
+                            math.degrees(r_new), math.degrees(q_new),
+                            (self._last_speed_ms - self._prev_speed_ms) / dt)
+        self._prev_speed_ms = self._last_speed_ms
 
         return matrix, {
             'v_move': v_move,

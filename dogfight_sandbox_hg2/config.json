@@ -7,5 +7,10 @@
 	"ShadowMap": true,
 	"Physics": {
 		"engine": "jsbsim"
+	},
+	"FlightPrediction": {
+		"enabled": true,
+		"horizon_s": 10,
+		"steps": 20
 	}
 }
