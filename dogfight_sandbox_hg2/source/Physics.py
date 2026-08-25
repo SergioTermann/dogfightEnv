@@ -111,6 +111,12 @@ def update_collisions(matrix: hg.Mat4, collisions_object, collisions_raycasts):
 
 def update_physics(matrix, collisions_object, physics_parameters, dts):
 
+	# Aircraft flagged for JSBSim flight dynamics are solved by the 6-DOF FDM
+	# (missiles and legacy aircraft keep the original model below).
+	jsbsim_model = physics_parameters.get('jsbsim_model')
+	if jsbsim_model is not None:
+		return jsbsim_model.update(matrix, physics_parameters, dts)
+
 	aX = hg.GetX(matrix)
 	aY = hg.GetY(matrix)
 	aZ = hg.GetZ(matrix)

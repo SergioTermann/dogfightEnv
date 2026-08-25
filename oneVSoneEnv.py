@@ -1,3 +1,4 @@
+import math
 import random
 import re
 import sys
@@ -13,6 +14,7 @@ import harfang as hg
 from random import uniform
 from math import radians
 table = PrettyTable()
+CONSTANTS_RADIUS_OF_EARTH = 6371000.0  # meters, used by XYtoGPS (Tacview logging)
 sys.path.append('./src/')
 sys.path.append('./src/environments/dogfightEnv/')
 sys.path.append('./src/environments/dogfightEnv/dogfight_sandbox_hg2/network_client_example/')
@@ -197,7 +199,7 @@ class oneVSoneEnv(Env):
         df.set_renderless_mode(False)
 
     def step(self, action):
-        file = open('C:\\Users\\bafs\\Desktop\\dogfightEnv\\trained_epoch_0.txt', 'a')
+        file = open('trained_epoch_0.txt', 'a')  # was a hardcoded foreign absolute path
         file.write('#{}'.format(self.step_game/100)+'\n')
 
         self.step_game += 1
@@ -396,7 +398,7 @@ class oneVSoneEnv(Env):
             df.reset_machine(i)
         self.ally = planes[:1]
         self.enemy = planes[1:]
-        self.ally_missile = missile[:12]
+        self.ally_missile = []  # was `missile[:12]` with missile undefined (crashed reset)
         df.set_plane_thrust(self.planeID, 1)
         df.set_plane_thrust(self.enemyID, 1)
         df.set_client_update_mode(True)

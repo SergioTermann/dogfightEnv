@@ -8,3 +8,4 @@ __pycache__/
 # Large binary assets (add via Git LFS if needed)
 dogfight_sandbox_hg2/source/assets/
 dogfight_sandbox_hg2/source/assets_compiled/
+.zcode/

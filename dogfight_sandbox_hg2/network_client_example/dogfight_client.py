@@ -1,6 +1,11 @@
 import json
-# import socket_lib
-from gym.envs.dogfightEnv.dogfight_sandbox_hg2.network_client_example import socket_lib
+try:
+    from gym.envs.dogfightEnv.dogfight_sandbox_hg2.network_client_example import socket_lib
+except ImportError:
+    try:
+        from . import socket_lib  # imported as a package from the repository layout
+    except ImportError:
+        import socket_lib  # imported with network_client_example/ on sys.path
 
 def connect(_host, _port):
 	socket_lib.connect_socket(_host, _port)

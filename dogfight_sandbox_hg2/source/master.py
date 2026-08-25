@@ -1445,6 +1445,13 @@ class Main:
             real_dt = hg.TickClock()
             forced_dt = hg.time_from_sec_f(cls.timestep)
 
+            # In headless (renderless) client-driven stepping the wall clock is unreliable
+            # (the idle render loop fragments TickClock to ~0.5 ms), which starved the
+            # control-level ramps and legacy physics. Step at the fixed timestep instead:
+            # one UPDATE_SCENE from the client == exactly `timestep` of simulation time.
+            if cls.flag_renderless and cls.flag_client_update_mode:
+                real_dt = forced_dt
+
             if cls.keyboard.Pressed(hg.K_Escape):
                 cls.flag_exit = True
 

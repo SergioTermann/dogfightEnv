@@ -44,6 +44,13 @@ if json_script != "":
     Main.antialiasing = script_parameters["AntiAliasing"]
     Main.flag_shadowmap = script_parameters["ShadowMap"]
 
+# Flight dynamics engine switch: "jsbsim" (6-DOF, default) or "legacy" (original simplified model)
+import jsbsim_flight_model
+jsbsim_flight_model.configure(script_parameters.get("Physics"))
+if "jsbsim_debug" in sys.argv:
+    jsbsim_flight_model.DEBUG = True
+print("Physics engine:", "jsbsim" if jsbsim_flight_model.USE_JSBSIM else "legacy")
+
 # If the VR is enabled the main window becomes useless
 # so we downsize it.
 if Main.flag_vr:
@@ -141,7 +148,13 @@ hg.ResetClock()
 
 # ------------------- Setup state:
 print('line146 ___haohsuai___start setup state')
-Main.current_state = states.init_menu_phase()
+if "auto_network" in sys.argv:
+    # Automated testing: skip the menu and start the "Network mode" mission directly
+    import Missions
+    Missions.mission_id = 1
+    Main.current_state = states.init_main_phase()
+else:
+    Main.current_state = states.init_menu_phase()
 
 # ------------------- Main loop:
 print('line150 ___haohsuai___ entering while loop')

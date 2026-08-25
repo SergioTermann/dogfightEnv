@@ -6,6 +6,7 @@ import MathsSupp as ms
 from Particles import *
 import tools
 import Physics
+import jsbsim_flight_model as JSBSimFM
 from MachineDevice import *
 import math
 from overlays import *
@@ -1371,6 +1372,14 @@ class Aircraft(Destroyable_Machine):
 
         self.flag_landed = True
         self.minimum_flight_speed = 250
+
+        # JSBSim 6-DOF flight dynamics (enabled per config.json "Physics").
+        # None -> the aircraft keeps the original simplified flight model.
+        self.jsbsim_model = None
+        self.jsbsim_needs_sync = True
+        if JSBSimFM.USE_JSBSIM and JSBSimFM.jsbsim_available():
+            self.jsbsim_model = JSBSimFM.JSBSimFlightModel(model_name)
+
         self.reset()
 
     def reset(self, position=None, rotation=None):
@@ -1423,6 +1432,22 @@ class Aircraft(Destroyable_Machine):
         self.linear_acceleration = 0
 
         self.flag_landed = self.start_landed
+
+        self.jsbsim_resync()
+
+    def jsbsim_resync(self):
+        """Ask the FDM to re-initialize from the next frame's matrix/velocity.
+        Called whenever kinematics are externally overwritten (reset, teleport, set speed)."""
+        if getattr(self, 'jsbsim_model', None) is not None:
+            self.jsbsim_needs_sync = True
+
+    def set_linear_speed(self, value):
+        Destroyable_Machine.set_linear_speed(self, value)
+        self.jsbsim_resync()
+
+    def reset_matrix(self, pos, rot):
+        Destroyable_Machine.reset_matrix(self, pos, rot)
+        self.jsbsim_resync()
 
     def hit(self, value):
         if not self.wreck:
@@ -1829,6 +1854,9 @@ class Aircraft(Destroyable_Machine):
 
     def update_collisions(self, matrix, dts):
 
+        if self.jsbsim_model is not None and not self.flag_crashed:
+            return self.update_collisions_jsbsim(matrix)
+
         mat, pos, rot, aX, aY, aZ = self.decompose_matrix(matrix)
 
         collisions_raycasts = [
@@ -1885,6 +1913,38 @@ class Aircraft(Destroyable_Machine):
                 if flag_crash:
                     pos.y = alt
                     self.crash()
+
+        return hg.TransformationMat4(pos, rot)
+
+    def update_collisions_jsbsim(self, matrix):
+        """Ground handling for JSBSim aircraft: the FDM resolves its own gear/ground contact
+        (fed with the terrain elevation each frame); the sandbox only catches terrain
+        penetration the flat-ground FDM missed and mid-air collisions."""
+        mat, pos, rot, aX, aY, aZ = self.decompose_matrix(matrix)
+
+        collisions_raycasts = [
+            {"name": "down", "position": self.bound_down, "direction": hg.Vec3(0, -5, 0)}
+        ]
+        ray_hits, self.terrain_altitude, self.terrain_normale = Physics.update_collisions(mat, self, collisions_raycasts)
+
+        alt = self.terrain_altitude
+        self.ground_node_collision = None
+
+        for collision in ray_hits:
+            if collision["name"] == "down" and len(collision["hits"]) > 0:
+                hit = collision["hits"][0]
+                machine = self.get_machine_by_node(hit.node)
+                if machine is not None and machine.type != Destroyable_Machine.TYPE_SHIP and machine.type != Destroyable_Machine.TYPE_GROUND:
+                    self.hit(1)
+                else:
+                    self.ground_node_collision = hit.node
+                    alt = hit.P.y + self.bottom_height
+
+        if pos.y < alt - 2.0:
+            hs, vs = self.get_world_speed()
+            if abs(vs) > 10:  # hit terrain with vertical speed -> crash
+                self.crash()
+            pos.y = max(pos.y, alt + 0.5)
 
         return hg.TransformationMat4(pos, rot)
 
@@ -1949,6 +2009,23 @@ class Aircraft(Destroyable_Machine):
 
                     # # ========================= Update physics
 
+                    jsbsim_model = self.jsbsim_model
+                    if jsbsim_model is not None and (self.flag_crashed or self.wreck):
+                        jsbsim_model = None  # wrecks slide on the legacy ground model
+                    if jsbsim_model is not None and self.jsbsim_needs_sync:
+                        jsbsim_model.sync_from_kinematics(self.parent_node.GetTransform().GetWorld(),
+                                                          self.v_move, self.thrust_level)
+                        self.jsbsim_needs_sync = False
+
+                    gear_down = False
+                    if "Gear" in self.devices and self.devices["Gear"] is not None:
+                        gear_down = self.devices["Gear"].activated
+
+                    terrain_alt_m = None
+                    if jsbsim_model is not None and Physics.terrain_heightmap is not None:
+                        terrain_alt_m = Physics.get_terrain_altitude(
+                            hg.GetT(self.parent_node.GetTransform().GetWorld()))[0]
+
                     physics_parameters = {"v_move": self.v_move,
                                           "thrust_level": self.thrust_level,
                                           "thrust_force": tf,
@@ -1958,7 +2035,11 @@ class Aircraft(Destroyable_Machine):
                                           "angular_levels": self.angular_levels,
                                           "angular_frictions": self.angular_frictions,
                                           "speed_ceiling": self.speed_ceiling,
-                                          "flag_easy_steering": self.flag_easy_steering
+                                          "flag_easy_steering": self.flag_easy_steering,
+                                          "jsbsim_model": jsbsim_model,
+                                          "gear_down": gear_down,
+                                          "post_combustion": self.post_combustion,
+                                          "terrain_altitude_m": terrain_alt_m
                                           }
 
                     mat, physics_parameters = Physics.update_physics(self.parent_node.GetTransform().GetWorld(), self, physics_parameters, dts)

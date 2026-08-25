@@ -1,2 +1,6 @@
 tqdm
 harfang
+# 6-DOF flight dynamics (bundled pre-extracted in ../bin/pylibs/ for the embedded
+# Python 3.8 runtime: JSBSim-1.2.1 cp38 win_amd64 + numpy-1.24.4)
+# jsbsim==1.2.1
+# numpy==1.24.4

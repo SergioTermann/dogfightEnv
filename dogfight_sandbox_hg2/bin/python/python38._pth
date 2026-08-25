@@ -4,6 +4,7 @@ python38.zip
 ..\..\
 ..\harfang\
 ..\tqdm\
+..\pylibs\
 ..\..\source\
 
 # Uncomment to run site.main() automatically

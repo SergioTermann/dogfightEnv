@@ -706,7 +706,8 @@ def get_plane_state(args):
 		"autopilot_speed": autopilot_speed,
 		"autopilot_altitude": autopilot_altitude,
 		"target_id": target_id,
-		"target_locked": target_locked
+		"target_locked": target_locked,
+		"physics_engine": "jsbsim" if getattr(machine, 'jsbsim_model', None) is not None else "legacy"
 	}
 	if flag_print_log:
 		print(args["plane_id"])
