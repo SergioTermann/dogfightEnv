@@ -80,11 +80,12 @@ def main():
     check('engine is ' + ('legacy' if legacy else 'jsbsim'), (s0['physics_engine'] == 'legacy') == legacy)
 
     # --- pitch up (moderate pull so speed survives the sequence) ----------------
+    # original engine convention: pitch level < 0 = nose up
     p0 = s0['pitch_attitude']
-    df.set_plane_pitch(plane, 0.6)   # >0 = nose up
+    df.set_plane_pitch(plane, -0.6)
     step(60)
     s1 = get(plane)
-    check('pitch cmd +0.6 -> pitch_attitude up', s1['pitch_attitude'] - p0 > 5.0,
+    check('pitch cmd -0.6 -> pitch_attitude up', s1['pitch_attitude'] - p0 > 5.0,
           '%.1f -> %.1f' % (p0, s1['pitch_attitude']))
     df.set_plane_pitch(plane, 0.0)
     step(60)
@@ -131,11 +132,11 @@ def main():
         if abs(get(plane)['roll_attitude']) < 10.0:
             break
     h0 = get(plane)['heading']
-    df.set_plane_yaw(plane, 1.0)     # >0 = nose left
+    df.set_plane_yaw(plane, 1.0)     # >0 = nose right (original engine convention)
     step(150)
     s3 = get(plane)
     dh = (s3['heading'] - h0 + 540) % 360 - 180
-    check('yaw cmd +1.0 -> heading decreases', dh < -1.0, '%.1f -> %.1f' % (h0, s3['heading']))
+    check('yaw cmd +1.0 -> heading increases', dh > 1.0, '%.1f -> %.1f' % (h0, s3['heading']))
     df.set_plane_yaw(plane, 0.0)
     step(30)
 

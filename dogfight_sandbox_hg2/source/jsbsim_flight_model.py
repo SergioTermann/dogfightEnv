@@ -49,23 +49,37 @@ AIRCRAFT_MODEL_MAP = {
     'Miuss': 'f16',
 }
 
-# --- control conventions (verified empirically, see tools/test_jsbsim_physics.py) ---
-# sandbox stick: angular.x > 0 = nose up, angular.y > 0 = yaw left, angular.z > 0 = roll left
-# jsbsim f16.xml: elevator-cmd > 0 = nose down, aileron-cmd > 0 = roll right, rudder-cmd > 0 = nose left
+# --- control conventions (matching the ORIGINAL engine semantics, see MachineDevice
+# autopilot + client_sample: pitch level < 0 = nose up; yaw level > 0 = nose right;
+# roll level > 0 = roll left. jsbsim f16.xml: elevator-cmd > 0 = nose down,
+# aileron-cmd > 0 = roll right, rudder-cmd > 0 = nose left.
 
 # --- SAS gains ---
 # f16.xml control conventions (empirical): elevator-cmd > 0 = nose down, aileron-cmd > 0 = roll right,
-# rudder-cmd > 0 = nose left. Attitude commands integrate the stick so that a NEUTRAL stick holds the
-# current attitude, matching the legacy sandbox where zero angular_level produced no rotation.
-PITCH_CMD_RATE = 40.0    # deg/s of pitch command per unit stick
-PITCH_CMD_MAX = 70.0     # deg
-K_THETA = 0.05           # elevator per deg of pitch error
-K_Q = 2.2                # elevator per rad/s pitch rate
-K_TRIM = 0.012           # slow integral on pitch error (steady-state attitude hold)
-TRIM_MAX = 0.5           # elevator trim integrator clamp
-ALPHA_SOFT_DEG = 12.0    # soft AoA limiter: relaxes the pitch cmd above this alpha
-ALPHA_LIMIT_DEG = 24.0   # hard AoA protection above this alpha
-ALPHA_PROTECT = 0.06     # elevator per degree over the limit
+# rudder-cmd > 0 = nose left.
+#
+# Pitch channel: load-compensated ALPHA HOLD (like a real FLCS). A neutral stick holds a
+# small target AoA (scaled by 1/cos(bank) so banked turns keep altitude), which makes the
+# aircraft seek its natural cruise speed instead of mushing at high alpha. The stick
+# integrates an AoA offset on top; releasing it decays back to the trim AoA.
+ALPHA_TARGET_DEG = 3.5    # trim AoA at wings level (speed-seeking equilibrium)
+GAMMA_ALPHA = 0.45        # deg of target-AoA UNLOAD per deg of sustained climb: excess
+                         # thrust turns into speed instead of an endless zoom climb
+ALPHA_CMD_RATE = 20.0     # deg/s of AoA command per unit stick
+ALPHA_CMD_MIN = -6.0      # AoA command clamp (push)
+ALPHA_CMD_MAX = 19.0      # AoA command clamp (pull, below stall)
+ALPHA_DECAY = 0.35        # 1/s: AoA offset decays when the pitch stick is neutral
+K_ALPHA = 0.08            # elevator per deg of AoA error
+K_Q = 2.2                 # elevator per rad/s pitch rate
+K_TRIM = 0.006            # slow integral on AoA error (steady-state elevator)
+TRIM_MAX = 0.3            # elevator trim integrator clamp
+GAMMA_DAMP_DEG = 10.0     # flight-path damping deadband: zooms beyond this are opposed
+K_GAMMA = 0.02            # elevator per deg of flight-path angle beyond the deadband
+GCAS_AGL_M = 250.0        # auto ground-collision avoidance (real F-16 Block 40+ feature;
+GCAS_PREDICT_S = 2.5      # also protects the legacy-tuned IA). Fires near the ground OR
+                         # when the current sink rate reaches the ground within the horizon.
+ALPHA_LIMIT_DEG = 24.0    # hard AoA protection above this alpha
+ALPHA_PROTECT = 0.06      # elevator per degree over the limit
 ROLL_CMD_RATE = 120.0    # deg/s of roll command per unit stick
 ROLL_CMD_MAX = 175.0     # deg
 K_PHI = 0.03             # aileron per deg of bank error
@@ -115,7 +129,7 @@ class JSBSimFlightModel:
         self._prev_pos = hg.Vec3(0, 0, 0)     # world meters
         self._last_speed_ms = 0.0             # for flight-path angle (speed protection)
         self._last_vy = 0.0
-        self._pitch_cmd_deg = 0.0             # SAS attitude commands (integrated from stick)
+        self._alpha_cmd_deg = 0.0             # SAS AoA offset (integrated from pitch stick)
         self._roll_cmd_deg = 0.0
         self._elev_trim = 0.0                 # slow integrator canceling the untrimmed moment
         self._ready = False
@@ -168,11 +182,13 @@ class JSBSimFlightModel:
         return hg.TransformationMat4(pos, rot)
 
     def _refuel(self):
-        # note: tank[0] is unindexed in this jsbsim build's property tree
+        # note: tank[0] is unindexed in this build's property tree, and the capacity
+        # properties do not exist (reading them yields 0 -- emptying the tanks and
+        # flaming the engine out), so fill with a fixed realistic load instead:
+        # 4 x 1750 lbs = 7000 lbs internal fuel.
         for name in ('propulsion/tank', 'propulsion/tank[1]', 'propulsion/tank[2]', 'propulsion/tank[3]'):
             try:
-                cap = self.fdm.get_property_value(name + '/capacity-lbs')
-                self.fdm.set_property_value(name + '/contents-lbs', cap)
+                self.fdm.set_property_value(name + '/contents-lbs', 1750.0)
             except Exception:
                 pass
 
@@ -184,8 +200,11 @@ class JSBSimFlightModel:
         heading, pitch, roll = self._attitudes_from_matrix(matrix)
         pos = hg.GetT(matrix)
         speed = hg.Len(v_move)
-        if speed < MIN_AIRSPEED_MS and pos.y > MIN_CONTROLLABLE_ALT_M:
-            speed = MIN_AIRSPEED_MS  # airborne with no speed: give a flyable fallback
+        # Only rescue AIRBORNE spawns with the fallback airspeed when the engine is
+        # actually commanded on; pre-mission idle aircraft (speed 0, throttle 0) sink
+        # in place like the legacy engine until the client resets them into flight.
+        if speed < MIN_AIRSPEED_MS and pos.y > MIN_CONTROLLABLE_ALT_M and thrust_level > 0.05:
+            speed = MIN_AIRSPEED_MS
         gamma = 0.0
         if hg.Len(v_move) > 1.0:
             gamma = math.degrees(math.asin(max(-1.0, min(1.0, v_move.y / hg.Len(v_move)))))
@@ -213,7 +232,7 @@ class JSBSimFlightModel:
             self.fdm.set_property_value('fcs/rudder-cmd-norm', 0.0)
 
         self._prev_euler = (pitch, heading, roll)
-        self._pitch_cmd_deg = pitch
+        self._alpha_cmd_deg = 0.0
         self._roll_cmd_deg = roll
         self._elev_trim = 0.0
         self._last_speed_ms = speed
@@ -258,36 +277,55 @@ class JSBSimFlightModel:
         alpha = self.fdm.get_property_value('aero/alpha-deg')
         beta = self.fdm.get_property_value('aero/beta-deg')
 
-        # --- SAS: integrate stick into attitude commands, then hold them ---
-        # elevator/aileron/rudder signs follow the f16.xml conventions stated above;
-        # roll command uses -= because sandbox angular.z > 0 means roll LEFT (phi decreases).
-        self._pitch_cmd_deg = max(-PITCH_CMD_MAX, min(PITCH_CMD_MAX,
-                                     self._pitch_cmd_deg + PITCH_CMD_RATE * angular.x * authority * dt))
+        # --- SAS: integrate sticks into AoA / bank commands, then hold them ---
+        # pitch level < 0 = nose up (original engine convention), so the AoA offset
+        # integrates with -=; roll level > 0 = roll left (phi decreases) also uses -=.
+        self._alpha_cmd_deg -= ALPHA_CMD_RATE * angular.x * authority * dt
+        if abs(angular.x) < 0.05:
+            self._alpha_cmd_deg *= max(0.0, 1.0 - dt * ALPHA_DECAY)
+        # yaw level > 0 = nose right: banks right (phi increases) via +=.
         self._roll_cmd_deg = max(-ROLL_CMD_MAX, min(ROLL_CMD_MAX,
                                     self._roll_cmd_deg - (ROLL_CMD_RATE * angular.z
-                                                          + YAW_ROLL_RATE * angular.y) * authority * dt))
+                                                          - YAW_ROLL_RATE * angular.y) * authority * dt))
         # easy-steering behavior (like the legacy engine): with lateral sticks neutral
         # the bank command eases back toward wings-level, preventing locked-in spiral dives.
         if abs(angular.z) < 0.05 and abs(angular.y) < 0.05:
             self._roll_cmd_deg *= max(0.0, 1.0 - dt * LEVEL_DECAY)
 
-        # Flight-path envelope protection (FLCS-style): the commanded attitude is clamped
-        # to the current flight-path angle +-15 deg, which bounds alpha so the aircraft
-        # can never be commanded into an unsustainable climb / departure. Above
-        # ALPHA_SOFT the command relaxes further so speed recovers.
-        cmd_eff = self._pitch_cmd_deg
-        protected = False
+        # pitch channel: hold AoA (load-compensated by 1/cos(bank) so turns keep altitude);
+        # a sustained climb UNLOADS the AoA target so excess thrust becomes speed
+        # instead of an endless zoom climb.
+        gamma_deg = None
         if self._last_speed_ms > 30.0:
             gamma_deg = math.degrees(math.asin(max(-1.0, min(1.0, self._last_vy / self._last_speed_ms))))
-            cmd_eff = max(gamma_deg - 20.0, min(gamma_deg + 15.0, cmd_eff))
-            protected = cmd_eff < self._pitch_cmd_deg - 0.01
-            cmd_eff -= max(0.0, alpha - ALPHA_SOFT_DEG)
-            protected = protected or alpha > ALPHA_SOFT_DEG
+        alpha_base = ALPHA_TARGET_DEG / max(0.35, math.cos(math.radians(phi)))
+        if gamma_deg is not None:
+            alpha_base -= GAMMA_ALPHA * max(0.0, min(gamma_deg, 15.0))
+        alpha_cmd = alpha_base + self._alpha_cmd_deg
+        alpha_cmd = max(ALPHA_CMD_MIN, min(ALPHA_CMD_MAX, alpha_cmd))
 
-        pitch_err = theta - cmd_eff
-        if not protected:  # anti-windup: the trim integrator only runs when unclamped
-            self._elev_trim = max(-TRIM_MAX, min(TRIM_MAX, self._elev_trim + K_TRIM * pitch_err * dt))
-        elevator = K_THETA * pitch_err + K_Q * q_rate + self._elev_trim
+        # --- auto-GCAS: sinking fast near the ground (gear up) -> max pull, wings level ---
+        terrain_alt = physics_parameters.get('terrain_altitude_m')
+        ground = terrain_alt if terrain_alt is not None else 0.0
+        agl = self._prev_pos.y - ground
+        predicted_agl = agl + self._last_vy * GCAS_PREDICT_S
+        if (self._last_vy < -5.0 and (agl < GCAS_AGL_M or predicted_agl < GCAS_AGL_M)
+                and self._last_speed_ms > 60.0 and not physics_parameters.get('gear_down')):
+            alpha_cmd = ALPHA_CMD_MAX
+            self._roll_cmd_deg *= max(0.0, 1.0 - dt * 6.0)
+
+        alpha_err = alpha - alpha_cmd
+        saturated = alpha_cmd <= ALPHA_CMD_MIN + 0.01 or alpha_cmd >= ALPHA_CMD_MAX - 0.01
+        if not saturated:  # anti-windup: trim integrator only runs when unclamped
+            self._elev_trim = max(-TRIM_MAX, min(TRIM_MAX, self._elev_trim + K_TRIM * alpha_err * dt))
+        elevator = K_ALPHA * alpha_err + K_Q * q_rate + self._elev_trim
+        # phugoid damping: oppose large flight-path excursions (zoom climbs / mush sinks)
+        # while leaving energy-maneuvering inside the deadband untouched.
+        if gamma_deg is not None:
+            if gamma_deg > GAMMA_DAMP_DEG:
+                elevator += K_GAMMA * (gamma_deg - GAMMA_DAMP_DEG)
+            elif gamma_deg < -GAMMA_DAMP_DEG:
+                elevator += K_GAMMA * (gamma_deg + GAMMA_DAMP_DEG)
         if alpha > ALPHA_LIMIT_DEG:
             elevator += ALPHA_PROTECT * (alpha - ALPHA_LIMIT_DEG)
         elif alpha < -10.0:
@@ -298,8 +336,8 @@ class JSBSimFlightModel:
         # expected turn rate for a coordinated bank (deg/s) so the damper doesn't fight it
         speed = max(self.fdm.get_property_value('velocities/vc-kts') * KT_TO_MS, 50.0)
         turn_rate_deg_s = math.degrees(9.81 * math.tan(math.radians(phi)) / speed) if abs(phi) < 80 else 0.0
-        rudder = -YAW_FF * angular.y * authority + K_R * math.radians(r_rate - turn_rate_deg_s) + K_BETA * beta
-        # (rudder-cmd > 0 = nose left; correcting positive sideslip beta needs nose right = negative cmd)
+        # yaw level > 0 = nose right -> rudder-cmd negative (f16: positive = nose left)
+        rudder = -YAW_FF * angular.y * authority + K_R * math.radians(r_rate - turn_rate_deg_s) - K_BETA * beta
 
         self.fdm.set_property_value('fcs/elevator-cmd-norm', max(-1.0, min(1.0, elevator)))
         self.fdm.set_property_value('fcs/aileron-cmd-norm', max(-1.0, min(1.0, aileron)))
