@@ -1,111 +1,135 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 660" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 640" font-family="Microsoft YaHei, PingFang SC, sans-serif">
   <defs>
-    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3a4254"/><stop offset="1" stop-color="#252b38"/>
+    <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d4454"/><stop offset="1" stop-color="#20252f"/>
+    </linearGradient>
+    <linearGradient id="stickg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a5468"/><stop offset="1" stop-color="#2b3140"/>
     </linearGradient>
   </defs>
-  <rect width="980" height="660" fill="#f5f7fa"/>
-  <text x="490" y="46" text-anchor="middle" font-size="30" font-weight="bold" fill="#1c2333">手柄操控映射 · Gamepad Controls</text>
-  <text x="490" y="74" text-anchor="middle" font-size="14" fill="#5a6478">来源：dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json → "GamePad"</text>
+  <rect width="1000" height="640" fill="#f5f7fa"/>
+  <text x="500" y="42" text-anchor="middle" font-size="28" font-weight="bold" fill="#1c2333">Xbox 手柄操控映射 · Gamepad Controls</text>
+  <text x="500" y="68" text-anchor="middle" font-size="13" fill="#5a6478">来源：dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json → "GamePad"</text>
 
-  <!-- ==================== gamepad body ==================== -->
+  <!-- ==================== Xbox Series controller ==================== -->
   <g>
-    <!-- main body: two lobes (drawn first so bumpers sit on top) -->
-    <path d="M 130 300 a 105 105 0 0 1 105 -105 l 130 0 a 105 105 0 0 1 105 105
-             a 105 105 0 0 1 -105 105 l -130 0 a 105 105 0 0 1 -105 -105 Z"
-          fill="url(#body)" stroke="#171c28" stroke-width="3"/>
-    <!-- bumpers (on top of the body edge) -->
-    <rect x="150" y="172" width="110" height="26" rx="13" fill="#2c3444" stroke="#1a2030" stroke-width="2"/>
-    <text x="205" y="190" text-anchor="middle" font-size="13" fill="#8f9ab0">LB</text>
-    <rect x="360" y="172" width="110" height="26" rx="13" fill="#2c3444" stroke="#1a2030" stroke-width="2"/>
-    <text x="415" y="190" text-anchor="middle" font-size="13" fill="#8f9ab0">RB 机炮</text>
-    <!-- center bridge buttons -->
-    <rect x="292" y="252" width="52" height="20" rx="10" fill="#20242f" stroke="#3a4254" stroke-width="1"/>
-    <text x="318" y="266" text-anchor="middle" font-size="11" fill="#c7cede">Back 起落架</text>
+    <!-- triggers -->
+    <path d="M 205 138 q 8 -26 40 -26 l 42 0 q 14 0 16 16 l 2 10 Z" fill="#171c28"/>
+    <path d="M 555 138 q 8 -26 40 -26 l 42 0 q 14 0 16 16 l 2 10 Z" fill="#171c28"/>
+    <text x="255" y="140" text-anchor="middle" font-size="12" fill="#8f9ab0">LT</text>
+    <text x="605" y="140" text-anchor="middle" font-size="12" fill="#8f9ab0">RT</text>
+    <!-- bumpers -->
+    <rect x="180" y="144" width="150" height="24" rx="12" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
+    <text x="255" y="161" text-anchor="middle" font-size="12" fill="#8f9ab0">LB</text>
+    <rect x="520" y="144" width="150" height="24" rx="12" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
+    <text x="595" y="161" text-anchor="middle" font-size="12" fill="#ff9d8a" font-weight="bold">RB 机炮</text>
 
-    <!-- left stick -->
-    <circle cx="190" cy="290" r="44" fill="#171c28"/>
-    <circle cx="190" cy="290" r="32" fill="#39435a" stroke="#55617c" stroke-width="3"/>
-    <circle cx="190" cy="290" r="10" fill="#55617c"/>
-    <!-- right stick -->
-    <circle cx="360" cy="352" r="44" fill="#171c28"/>
-    <circle cx="360" cy="352" r="32" fill="#39435a" stroke="#55617c" stroke-width="3"/>
-    <circle cx="360" cy="352" r="10" fill="#55617c"/>
+    <!-- body: Xbox silhouette with grips -->
+    <path d="M 218 168
+             L 632 168
+             C 700 168 744 196 762 250
+             L 792 344 C 806 388 800 448 776 476
+             C 756 498 724 500 704 480
+             L 648 424 C 628 404 602 396 576 396
+             L 424 396
+             C 398 396 372 404 352 424
+             L 296 480
+             C 276 500 244 498 224 476
+             C 200 448 194 388 208 344
+             L 238 250
+             C 256 196 300 168 218 168 Z"
+          fill="url(#shell)" stroke="#141926" stroke-width="3"/>
 
-    <!-- d-pad -->
-    <g fill="#2c3444" stroke="#171c28" stroke-width="1.5">
-      <rect x="168" y="336" width="20" height="20" rx="3"/>
-      <rect x="168" y="380" width="20" height="20" rx="3"/>
-      <rect x="146" y="358" width="20" height="20" rx="3"/>
-      <rect x="190" y="358" width="20" height="20" rx="3"/>
-      <rect x="168" y="358" width="20" height="20" fill="#39435a" stroke="none"/>
+    <!-- Xbox nexus button -->
+    <circle cx="425" cy="205" r="22" fill="#d8dee9" stroke="#9aa4b8" stroke-width="2"/>
+    <text x="425" y="213" text-anchor="middle" font-size="20" font-weight="bold" fill="#5a6478">✕</text>
+    <!-- View button -->
+    <g>
+      <circle cx="362" cy="212" r="13" fill="#2b3140" stroke="#4a5468" stroke-width="2"/>
+      <rect x="356" y="206" width="8" height="8" fill="none" stroke="#8f9ab0" stroke-width="1.6"/>
+      <rect x="360" y="210" width="8" height="8" fill="none" stroke="#8f9ab0" stroke-width="1.6"/>
+    </g>
+    <!-- Menu button -->
+    <g>
+      <circle cx="488" cy="212" r="13" fill="#2b3140" stroke="#4a5468" stroke-width="2"/>
+      <line x1="482" y1="207" x2="494" y2="207" stroke="#8f9ab0" stroke-width="1.8"/>
+      <line x1="482" y1="212" x2="494" y2="212" stroke="#8f9ab0" stroke-width="1.8"/>
+      <line x1="482" y1="217" x2="494" y2="217" stroke="#8f9ab0" stroke-width="1.8"/>
     </g>
 
-    <!-- face buttons: Y top, X left, B right, A bottom -->
-    <circle cx="430" cy="268" r="17" fill="#e8c34a" stroke="#b3922f" stroke-width="2"/>
-    <text x="430" y="273" text-anchor="middle" font-size="14" font-weight="bold" fill="#3a3008">Y</text>
-    <circle cx="394" cy="304" r="17" fill="#5aa9e6" stroke="#3d7db0" stroke-width="2"/>
-    <text x="394" y="309" text-anchor="middle" font-size="14" font-weight="bold" fill="#0e2d42">X</text>
-    <circle cx="466" cy="304" r="17" fill="#e05f4e" stroke="#b03a2c" stroke-width="2"/>
-    <text x="466" y="309" text-anchor="middle" font-size="14" font-weight="bold" fill="#3d0f09">B</text>
-    <circle cx="430" cy="340" r="17" fill="#4caf78" stroke="#358257" stroke-width="2"/>
-    <text x="430" y="345" text-anchor="middle" font-size="14" font-weight="bold" fill="#0d2b1a">A</text>
+    <!-- left stick (upper-left) -->
+    <circle cx="292" cy="266" r="46" fill="#171c28"/>
+    <circle cx="292" cy="266" r="34" fill="url(#stickg)" stroke="#5a6478" stroke-width="3"/>
+    <circle cx="292" cy="266" r="24" fill="#39414f" stroke="#4a5468" stroke-width="2"/>
+    <circle cx="292" cy="266" r="10" fill="#4a5468"/>
+
+    <!-- ABXY (upper-right), Xbox colors -->
+    <circle cx="590" cy="240" r="19" fill="#f4c20d" stroke="#c79c06" stroke-width="2.5"/>
+    <text x="590" y="246" text-anchor="middle" font-size="16" font-weight="bold" fill="#4a3a00">Y</text>
+    <circle cx="553" cy="277" r="19" fill="#2f6fd8" stroke="#1f4f9e" stroke-width="2.5"/>
+    <text x="553" y="283" text-anchor="middle" font-size="16" font-weight="bold" fill="#dbe7ff">X</text>
+    <circle cx="627" cy="277" r="19" fill="#d83b2f" stroke="#9e271e" stroke-width="2.5"/>
+    <text x="627" y="283" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffe3df">B</text>
+    <circle cx="590" cy="314" r="19" fill="#2f9e4f" stroke="#1f7238" stroke-width="2.5"/>
+    <text x="590" y="320" text-anchor="middle" font-size="16" font-weight="bold" fill="#dcffe6">A</text>
+
+    <!-- d-pad (lower-left, Xbox cross) -->
+    <g>
+      <circle cx="318" cy="352" r="42" fill="#20252f"/>
+      <path d="M 310 312 h 16 v 32 h 32 v 16 h -32 v 32 h -16 v -32 h -32 v -16 h 32 Z"
+            fill="#39414f" stroke="#4a5468" stroke-width="2"/>
+    </g>
+
+    <!-- right stick (lower-center-right) -->
+    <circle cx="452" cy="330" r="46" fill="#171c28"/>
+    <circle cx="452" cy="330" r="34" fill="url(#stickg)" stroke="#5a6478" stroke-width="3"/>
+    <circle cx="452" cy="330" r="24" fill="#39414f" stroke="#4a5468" stroke-width="2"/>
+    <circle cx="452" cy="330" r="10" fill="#4a5468"/>
   </g>
 
-  <!-- ==================== direct labels on the pad ==================== -->
-  <!-- flight (blue) -->
-  <g font-size="15" fill="#1f6fd6" font-weight="bold">
-    <rect x="98" y="222" width="186" height="24" rx="12" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
-    <text x="191" y="239" text-anchor="middle">左摇杆 = 油门Y · 偏航X</text>
-    <rect x="270" y="412" width="186" height="24" rx="12" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
-    <text x="363" y="429" text-anchor="middle">右摇杆 = 滚转X · 俯仰Y</text>
+  <!-- ==================== on-pad hints ==================== -->
+  <g font-size="14" font-weight="bold">
+    <rect x="188" y="176" width="206" height="22" rx="11" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
+    <text x="291" y="192" text-anchor="middle" fill="#1f6fd6">左摇杆 = 油门Y · 偏航X · 按下IA</text>
+    <rect x="346" y="376" width="206" height="24" rx="12" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
+    <text x="449" y="393" text-anchor="middle" fill="#1f6fd6">右摇杆 = 滚转X · 俯仰Y</text>
+    <rect x="228" y="412" width="188" height="22" rx="11" fill="#fdf4dc" stroke="#b8922f" stroke-width="1.5"/>
+    <text x="322" y="428" text-anchor="middle" font-size="13" fill="#8a6d1a">十字键 ↑↓减速板 ←→襟翼</text>
   </g>
-  <!-- weapons: only the RB hint sits on the bumper; X/B meanings live in the legend
-       (per-part labels overlapped the face buttons, so they were removed) -->
-  <!-- systems (amber) -->
-  <g font-size="13" fill="#8a6d1a" font-weight="bold">
-    <rect x="126" y="412" width="140" height="22" rx="11" fill="#fdf4dc" stroke="#b8922f" stroke-width="1.5"/>
-    <text x="196" y="428" text-anchor="middle">十字键 ↑↓减速板 ←→襟翼</text>
-  </g>
-  <rect x="140" y="316" width="64" height="22" rx="11" fill="#fdf4dc" stroke="#b8922f" stroke-width="1.5"/>
-  <text x="172" y="332" text-anchor="middle" font-size="13" fill="#8a6d1a" font-weight="bold">按下=IA</text>
 
   <!-- ==================== right legend panel ==================== -->
   <g>
-    <rect x="580" y="110" width="376" height="470" rx="14" fill="#ffffff" stroke="#d4dae5" stroke-width="2"/>
-    <text x="768" y="146" text-anchor="middle" font-size="18" font-weight="bold" fill="#1c2333">功能对照 Function Map</text>
+    <rect x="660" y="100" width="316" height="470" rx="14" fill="#ffffff" stroke="#d4dae5" stroke-width="2"/>
+    <text x="818" y="136" text-anchor="middle" font-size="18" font-weight="bold" fill="#1c2333">功能对照 Function Map</text>
 
-    <!-- flight group -->
-    <circle cx="608" cy="182" r="8" fill="#1f6fd6"/>
-    <text x="626" y="188" font-size="15" font-weight="bold" fill="#1f6fd6">飞行操纵 Flight</text>
-    <g font-size="14" fill="#3a4356">
-      <text x="626" y="216">左摇杆 Y 轴　→ 油门推力 Thrust</text>
-      <text x="626" y="240">左摇杆 X 轴　→ 偏航 / 方向舵 Yaw</text>
-      <text x="626" y="264">右摇杆 X 轴　→ 滚转 / 副翼 Roll</text>
-      <text x="626" y="288">右摇杆 Y 轴　→ 俯仰 / 升降舵 Pitch</text>
+    <circle cx="686" cy="172" r="8" fill="#1f6fd6"/>
+    <text x="702" y="178" font-size="15" font-weight="bold" fill="#1f6fd6">飞行操纵 Flight</text>
+    <g font-size="13.5" fill="#3a4356">
+      <text x="702" y="204">左摇杆 Y　→ 油门推力 Thrust</text>
+      <text x="702" y="226">左摇杆 X　→ 偏航 / 方向舵 Yaw</text>
+      <text x="702" y="248">右摇杆 X　→ 滚转 / 副翼 Roll</text>
+      <text x="702" y="270">右摇杆 Y　→ 俯仰 / 升降舵 Pitch</text>
     </g>
-    <line x1="600" y1="304" x2="936" y2="304" stroke="#e6eaf2" stroke-width="2"/>
+    <line x1="678" y1="286" x2="958" y2="286" stroke="#e6eaf2" stroke-width="2"/>
 
-    <!-- weapons group -->
-    <circle cx="608" cy="330" r="8" fill="#c0392b"/>
-    <text x="626" y="336" font-size="15" font-weight="bold" fill="#c0392b">武器 Weapons</text>
-    <g font-size="14" fill="#3a4356">
-      <text x="626" y="364">X 键　　　　→ 发射导弹 Fire missile</text>
-      <text x="626" y="388">RB 肩键(按住) → 机炮连发 Machine gun</text>
-      <text x="626" y="412">B 键　　　　→ 加力燃烧开关 Post-combustion</text>
+    <circle cx="686" cy="308" r="8" fill="#c0392b"/>
+    <text x="702" y="314" font-size="15" font-weight="bold" fill="#c0392b">武器 Weapons</text>
+    <g font-size="13.5" fill="#3a4356">
+      <text x="702" y="340">X 键　　 → 发射导弹 Missile</text>
+      <text x="702" y="362">RB 肩键(按住) → 机炮 Gun</text>
+      <text x="702" y="384">B 键　　 → 加力燃烧 Afterburner</text>
     </g>
-    <line x1="600" y1="428" x2="936" y2="428" stroke="#e6eaf2" stroke-width="2"/>
+    <line x1="678" y1="400" x2="958" y2="400" stroke="#e6eaf2" stroke-width="2"/>
 
-    <!-- systems group -->
-    <circle cx="608" cy="454" r="8" fill="#b8922f"/>
-    <text x="626" y="460" font-size="15" font-weight="bold" fill="#8a6d1a">系统 Systems</text>
-    <g font-size="14" fill="#3a4356">
-      <text x="626" y="488">Y 键　　　　→ 切换锁定目标 Next target</text>
-      <text x="626" y="512">Back 键　　 → 起落架收放 Gear</text>
-      <text x="626" y="536">左摇杆按下　→ 交给 IA 自动驾驶</text>
-      <text x="626" y="560">十字键 ↑↓　 → 减速板 Brake +/−</text>
-      <text x="626" y="584">十字键 ←→　 → 襟翼 Flaps −/+</text>
+    <circle cx="686" cy="422" r="8" fill="#b8922f"/>
+    <text x="702" y="428" font-size="15" font-weight="bold" fill="#8a6d1a">系统 Systems</text>
+    <g font-size="13.5" fill="#3a4356">
+      <text x="702" y="454">Y 键　　 → 切换目标 Next target</text>
+      <text x="702" y="476">View 键　 → 起落架 Gear</text>
+      <text x="702" y="498">左摇杆按下 → 交给 IA 自动驾驶</text>
+      <text x="702" y="520">十字键 ↑↓ → 减速板 Brake +/−</text>
+      <text x="702" y="542">十字键 ←→ → 襟翼 Flaps −/+</text>
     </g>
   </g>
-  <text x="490" y="632" text-anchor="middle" font-size="13" fill="#8a93a8">键盘映射同见于 aircraft_user_inputs_mapping.json → "Keyboard"（方向键=俯仰/滚转，Home/End=油门，空格=加力，Enter=机炮，F1=导弹，F5=补充弹药，T=换目标，G=起落架，I=IA，A=自驾）</text>
+  <text x="500" y="606" text-anchor="middle" font-size="12.5" fill="#8a93a8">键盘：↑↓←→ 俯仰/滚转 · Home/End 油门 · 空格 加力 · Enter 机炮 · F1 导弹 · F5 补弹 · T 换目标 · G 起落架 · I 交IA · A 自驾</text>
 </svg>

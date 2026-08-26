@@ -131,7 +131,7 @@ cd llm_commander
 
 接入 Xbox 布局手柄即可直接飞行（映射定义：`dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json` → `"GamePad"`）：
 
-![手柄操控映射](docs/images/gamepad_mapping.svg)
+![Xbox 手柄操控映射](docs/images/gamepad_mapping.svg)
 
 **键盘映射**：`↑↓←→` 俯仰/滚转 · `Home/End` 油门 ± · `空格` 加力 · `Enter` 机炮 · `F1` 导弹 · `F5` 补弹 · `T` 换目标 · `G` 起落架 · `B/N` 减速板 · `C/V` 襟翼 · `I` 交 IA · `A` 自动驾驶 · `E` 简化操纵
 
