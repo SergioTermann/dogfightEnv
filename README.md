@@ -53,11 +53,7 @@ cd llm_commander
 
 ![指挥官任务分配](docs/images/screenshot_commander_engage.png)
 
-▲ 绿色标签 `ALLY_1 ENGAGE ENNEMY_1`（本图指挥蓝方示例）：飞机前方同时画出绿色预测航线与 `+5s` 标记
-
-![敌机任务标签](docs/images/screenshot_commander_labels.png)
-
-▲ 红色标签 `ENNEMY_1 ENGAGE ALLY_1`：敌机正在追击我方
+▲ 2v2 交战实拍：绿色 `ALLY_1 ENGAGE ennemy_1` 与红色 `ENNEMY_1 ENGAGE ALLY_1` 任务标签同框，导弹拉烟正在飞向目标
 
 常用参数：`--dry-run`（只打印不下发）、`--once`（单轮决策）、`--duration N`（N 秒后退出）。
 
@@ -77,6 +73,10 @@ cd llm_commander
 ## 未来轨迹预测
 
 沙盒 3D 视图为每架 JSBSim 飞机实时绘制**未来 10 秒预测航线**：基于当前转弯率 / 俯仰率 / 加速度做指数衰减的运动学外推，友军绿色、敌军红色，每 5 秒一个十字标记 + `+Ns` 标签（随距离自动缩放，远处依然可读）。
+
+![轨迹预测](docs/images/screenshot_prediction.png)
+
+▲ 我机前方的绿色预测航线与 `+5s` 十字标记（HUD 左侧为目标距离/航向/锁定信息）
 
 配置：`config.json` → `"FlightPrediction": {"enabled": true, "horizon_s": 10, "steps": 20}`
 
