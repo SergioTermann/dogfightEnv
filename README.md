@@ -115,6 +115,18 @@ cd llm_commander
 - **LLM 引擎**：中文"空中指挥官"system prompt + 战况 JSON（位置网格化 km / 血量 / 余弹 / 距离矩阵）→ 严格 JSON 输出；幻觉机名/非法目标自动丢弃，API 失败沿用上轮方案；默认对接智谱，改 `api_base` 可切 OpenAI / DeepSeek / 本地 vLLM 等
 - 决策记录写入 `llm_commander/decisions.jsonl`；任务变化才下发，不刷命令
 
+## 多视角观看
+
+小键盘即时切换观察视角（`2/8/4/6` 尾后/前方/左侧/右侧跟拍，`5` 卫星俯视，`3` 座舱，`1` 切换跟拍目标，`Insert/PageUp` 调整视野）：
+
+| 尾后跟拍（默认 `2`） | 前方迎头（`8`） |
+|:---:|:---:|
+| ![尾后视角](docs/images/view_back.png) | ![前方视角](docs/images/view_front.png) |
+| **左侧跟拍（`4`）** | **右侧跟拍（`6`）** |
+| ![左侧视角](docs/images/view_left.png) | ![右侧视角](docs/images/view_right.png) |
+| **卫星俯视（`5`）** | **座舱视角（`3`）** |
+| ![卫星视角](docs/images/view_satellite.png) | ![座舱视角](docs/images/view_cockpit.png) |
+
 ## 手柄操控映射
 
 接入 Xbox 布局手柄即可直接飞行（映射定义：`dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json` → `"GamePad"`）：
