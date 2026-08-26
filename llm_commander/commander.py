@@ -120,7 +120,10 @@ class Commander:
                     if (states.get(n, {}).get("nationality") == 1) == (self.side == "allies")]
         print("[commander] engine=%s side=%s planes=%s" % (self.engine.name, self.side, self.own))
 
-        if self.cfg.get("blue_ia") and self.side == "ennemies":
+        # sparring partner: activate the built-in IA on the opposite side
+        sparring = ((self.side == "ennemies" and self.cfg.get("blue_ia", False))
+                    or (self.side == "allies" and self.cfg.get("red_ia", False)))
+        if sparring:
             for n in self.planes:
                 if n not in self.own:
                     df.activate_IA(n)
