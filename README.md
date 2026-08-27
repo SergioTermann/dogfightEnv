@@ -2,7 +2,7 @@
 
 # dogfightEnv
 
-基于 [Harfang3D](https://harfang3d.com/) `dogfight_sandbox` 的**空战强化学习仿真环境**：JSBSim 六自由度飞行动力学 + TCP/IP 网络控制协议 + 大模型任务分配指挥官 + 画面内轨迹预测。
+基于 [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2)（[Harfang3D](https://harfang3d.com/) 引擎的空战沙盒）构建的**空战强化学习仿真环境**：JSBSim 六自由度飞行动力学 + TCP/IP 网络控制协议 + 大模型任务分配指挥官 + 画面内轨迹预测。
 
 ![空战主视图](docs/images/screenshot_hero.png)
 
@@ -176,6 +176,11 @@ dogfightEnv/
     ├── tools/test_llm_commander.py         #   指挥官端到端（12 项）
     └── bin/python/                         #   嵌入式 Python 3.8 运行时
 ```
+
+## 致谢
+
+- **[harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2)** —— 本项目的基础。沙盒的 Harfang3D 渲染与仿真框架、飞机/导弹/舰船模型、岛链海面场景以及 TCP/IP 网络协议全部来自该原版项目，在此基础上完成了 JSBSim 六自由度物理替换、飞控 SAS、轨迹预测与 LLM 任务指挥官等扩展。感谢 Harfang Technologies 的开源贡献。
+- **[mrwangyou/DBRL](https://github.com/mrwangyou/DBRL)** —— 感谢 DBRL 对本项目的大力支持。
 
 ## 注意
 

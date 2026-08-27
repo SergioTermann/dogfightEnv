@@ -2,7 +2,7 @@
 
 # dogfightEnv
 
-An **air-combat reinforcement learning environment** built on the [Harfang3D](https://harfang3d.com/) `dogfight_sandbox`: JSBSim 6-DOF flight dynamics + TCP/IP control protocol + LLM mission commander + in-view trajectory prediction.
+An **air-combat reinforcement learning environment** built on [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) (an [Harfang3D](https://harfang3d.com/)-engine dogfight sandbox): JSBSim 6-DOF flight dynamics + TCP/IP control protocol + LLM mission commander + in-view trajectory prediction.
 
 ![Air combat main view](docs/images/screenshot_hero.png)
 
@@ -176,6 +176,11 @@ dogfightEnv/
     ├── tools/test_llm_commander.py         #   commander end-to-end (12 checks)
     └── bin/python/                         #   embedded Python 3.8 runtime
 ```
+
+## Acknowledgments
+
+- **[harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2)** — the foundation of this project. The sandbox's Harfang3D rendering and simulation framework, aircraft/missile/ship models, the island-chain sea scene and the TCP/IP network protocol all come from that upstream project; the JSBSim 6-DOF physics replacement, flight-control SAS, trajectory prediction and LLM mission commander are extensions layered on top of it. Thanks to Harfang Technologies for open-sourcing it.
+- **[mrwangyou/DBRL](https://github.com/mrwangyou/DBRL)** — thanks for the great support to this project.
 
 ## Notes
 
