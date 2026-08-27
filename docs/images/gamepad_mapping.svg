@@ -12,7 +12,8 @@
   <text x="500" y="68" text-anchor="middle" font-size="13" fill="#5a6478">来源：dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json → "GamePad"</text>
 
   <!-- ==================== Xbox Series controller ==================== -->
-  <g>
+  <!-- shifted left by 150 so the right grip clears the legend panel (x>=660) -->
+  <g transform="translate(-150,0)">
     <!-- triggers -->
     <path d="M 205 138 q 8 -26 40 -26 l 42 0 q 14 0 16 16 l 2 10 Z" fill="#171c28"/>
     <path d="M 555 138 q 8 -26 40 -26 l 42 0 q 14 0 16 16 l 2 10 Z" fill="#171c28"/>
@@ -88,13 +89,13 @@
   </g>
 
   <!-- ==================== on-pad hints ==================== -->
-  <g font-size="14" font-weight="bold">
+  <g font-size="14" font-weight="bold" transform="translate(-150,0)">
     <rect x="188" y="176" width="206" height="22" rx="11" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
     <text x="291" y="192" text-anchor="middle" fill="#1f6fd6">左摇杆 = 油门Y · 偏航X · 按下IA</text>
-    <rect x="346" y="376" width="206" height="24" rx="12" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
-    <text x="449" y="393" text-anchor="middle" fill="#1f6fd6">右摇杆 = 滚转X · 俯仰Y</text>
-    <rect x="228" y="412" width="188" height="22" rx="11" fill="#fdf4dc" stroke="#b8922f" stroke-width="1.5"/>
-    <text x="322" y="428" text-anchor="middle" font-size="13" fill="#8a6d1a">十字键 ↑↓减速板 ←→襟翼</text>
+    <rect x="346" y="382" width="206" height="24" rx="12" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
+    <text x="449" y="399" text-anchor="middle" fill="#1f6fd6">右摇杆 = 滚转X · 俯仰Y</text>
+    <rect x="228" y="418" width="188" height="22" rx="11" fill="#fdf4dc" stroke="#b8922f" stroke-width="1.5"/>
+    <text x="322" y="434" text-anchor="middle" font-size="13" fill="#8a6d1a">十字键 ↑↓减速板 ←→襟翼</text>
   </g>
 
   <!-- ==================== right legend panel ==================== -->
@@ -131,5 +132,6 @@
       <text x="702" y="542">十字键 ←→ → 襟翼 Flaps −/+</text>
     </g>
   </g>
-  <text x="500" y="606" text-anchor="middle" font-size="12.5" fill="#8a93a8">键盘：↑↓←→ 俯仰/滚转 · Home/End 油门 · 空格 加力 · Enter 机炮 · F1 导弹 · F5 补弹 · T 换目标 · G 起落架 · I 交IA · A 自驾</text>
+  <text x="500" y="598" text-anchor="middle" font-size="12.5" fill="#8a93a8">键盘：↑↓←→ 俯仰/滚转 · Home/End 油门 · 空格 加力 · Enter 机炮 · F1 导弹 · F5 补弹</text>
+  <text x="500" y="620" text-anchor="middle" font-size="12.5" fill="#8a93a8">T 换目标 · G 起落架 · B/N 减速板 · C/V 襟翼 · I 交IA · A 自动驾驶 · E 简化操纵</text>
 </svg>
