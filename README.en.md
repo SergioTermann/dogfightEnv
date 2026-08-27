@@ -149,6 +149,37 @@ Plug in an Xbox-layout gamepad and fly (bindings: `dogfight_sandbox_hg2/source/s
 
 External deps (system Python): `gym` `numpy` `harfang` `prettytable`. The sandbox itself runs on the bundled embedded Python 3.8 (`bin/python/`, jsbsim+numpy included) — zero install.
 
+## RL Training (modular PPO / SAC / Rainbow suite)
+
+`training/` provides a self-contained modular algorithm suite (pure PyTorch,
+zero new dependencies) with a unified entry point:
+
+| Algorithm | Type | Action space | Key components |
+|---|---|---|---|
+| `ppo` | on-policy | continuous Box | GAE, clipped objective, Gaussian policy |
+| `sac` | off-policy | continuous Box | twin Q, auto temperature, soft updates |
+| `rainbow` | off-policy | discrete grid (54 by default) | n-step, double-Q, dueling, NoisyNet, PER, C51 |
+
+```bash
+# 1. start the sandbox (1v1)
+cd dogfight_sandbox_hg2/source && ../bin/python/python.exe main.py auto_network
+
+# 2. train (second terminal, system Python)
+python -m training.train --algo ppo --env oneVSone --timesteps 500000
+python -m training.train --algo sac  --env oneVSone --timesteps 1000000
+python -m training.train --algo rainbow --env oneVSone --timesteps 1000000
+
+# 3. load a checkpoint and watch (renders automatically)
+python -m training.enjoy --model checkpoints/ppo_oneVSone/model_best.pt
+```
+
+- Override any hyperparameter with `--set key=value` (e.g. `--set lr=1e-4 gamma=0.995`); `--device cpu/cuda`, `--render`, `--seed`, `--no-normalize` available
+- The adapter layer handles the legacy gym API, running observation normalization (stats saved with checkpoints) and the stale-reset fix; Rainbow discretizes actions through a configurable grid (`training/wrapper.py`)
+- Logs go to `checkpoints/<algo>_<env>/log.jsonl` (episode return/length/losses); best model saved as `model_best.pt`
+- One sandbox serves one TCP client: a single training process at a time
+- Tests: `python -m training.tests.test_algos_toy` (convergence + roundtrip on a mock env, no sandbox); `python dogfight_sandbox_hg2/tools/test_training_smoke.py` (10 end-to-end checks on the real sandbox)
+- Training deps: `pip install -r requirements-train.txt` (torch/numpy/gym)
+
 ## Tests
 
 ```bash

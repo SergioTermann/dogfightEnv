@@ -12,3 +12,6 @@ dogfight_sandbox_hg2/source/assets_compiled/
 
 # LLM commander runtime artifacts
 llm_commander/decisions.jsonl
+
+# RL training artifacts
+checkpoints/

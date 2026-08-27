@@ -149,6 +149,36 @@ cd llm_commander
 
 外部依赖（系统 Python）：`gym` `numpy` `harfang` `prettytable`；沙盒本身用自带嵌入式 Python 3.8（`bin/python/`，含 jsbsim+numpy），开箱即用。
 
+## RL 训练（PPO / SAC / Rainbow 模块化套件）
+
+`training/` 提供自研模块化算法套件（纯 PyTorch，零新增依赖）+ 统一训练入口：
+
+| 算法 | 类型 | 动作空间 | 关键组件 |
+|---|---|---|---|
+| `ppo` | 在策略 | 连续 Box | GAE、clip 目标、高斯策略 |
+| `sac` | 离策略 | 连续 Box | 双 Q、温度自动调、软更新 |
+| `rainbow` | 离策略 | 离散网格（默认 54 档） | n-step、双 Q、决斗、NoisyNet、PER、C51 |
+
+```bash
+# 1. 启动沙盒（1v1）
+cd dogfight_sandbox_hg2/source && ../bin/python/python.exe main.py auto_network
+
+# 2. 训练（另开终端，系统 Python）
+python -m training.train --algo ppo --env oneVSone --timesteps 500000
+python -m training.train --algo sac  --env oneVSone --timesteps 1000000
+python -m training.train --algo rainbow --env oneVSone --timesteps 1000000
+
+# 3. 加载 checkpoint 观看（渲染模式自动开启）
+python -m training.enjoy --model checkpoints/ppo_oneVSone/model_best.pt
+```
+
+- `--set key=value` 覆盖任意超参（如 `--set lr=1e-4 gamma=0.995`），`--device cpu/cuda`、`--render`、`--seed`、`--no-normalize` 可选
+- 环境适配层自动处理旧版 gym API、观测归一化（运行均值方差随 checkpoint 保存）、reset 陈旧观测修补；Rainbow 通过 `DiscreteActionEnv` 把连续动作离散成网格（roll/pitch/thrust/fire 组合，`training/wrapper.py` 可改）
+- 日志写入 `checkpoints/<algo>_<env>/log.jsonl`（episode 回报/长度/损失），最优模型存 `model_best.pt`
+- 沙盒单连接限制：一次只能跑一个训练进程
+- 测试：`python -m training.tests.test_algos_toy`（MockEnv 三算法收敛 + 存取，无需沙盒）；`python dogfight_sandbox_hg2/tools/test_training_smoke.py`（真沙盒端到端 10 项）
+- 训练依赖：`pip install -r requirements-train.txt`（torch/numpy/gym，声明性质）
+
 ## 测试
 
 ```bash
