@@ -1,3 +1,5 @@
+[English](README.en.md) | **简体中文**
+
 # dogfightEnv
 
 基于 [Harfang3D](https://harfang3d.com/) `dogfight_sandbox` 的**空战强化学习仿真环境**：JSBSim 六自由度飞行动力学 + TCP/IP 网络控制协议 + 大模型任务分配指挥官 + 画面内轨迹预测。
