@@ -14,31 +14,31 @@
   <!-- ==================== Xbox Series controller ==================== -->
   <!-- shifted left by 150 so the right grip clears the legend panel (x>=660) -->
   <g transform="translate(-150,0)">
-    <!-- triggers -->
-    <path d="M 205 138 q 8 -26 40 -26 l 42 0 q 14 0 16 16 l 2 10 Z" fill="#171c28"/>
-    <path d="M 555 138 q 8 -26 40 -26 l 42 0 q 14 0 16 16 l 2 10 Z" fill="#171c28"/>
-    <text x="255" y="140" text-anchor="middle" font-size="12" fill="#8f9ab0">LT</text>
-    <text x="605" y="140" text-anchor="middle" font-size="12" fill="#8f9ab0">RT</text>
-    <!-- bumpers -->
-    <rect x="180" y="144" width="150" height="24" rx="12" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
-    <text x="255" y="161" text-anchor="middle" font-size="12" fill="#8f9ab0">LB</text>
-    <rect x="520" y="144" width="150" height="24" rx="12" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
-    <text x="595" y="161" text-anchor="middle" font-size="12" fill="#ff9d8a" font-weight="bold">RB 机炮</text>
+    <!-- triggers (tabs overlapping the top edge, not floating above it) -->
+    <path d="M 218 152 q 6 -20 34 -20 l 36 0 q 12 0 14 14 l 2 22 Z" fill="#171c28"/>
+    <path d="M 558 152 q 6 -20 34 -20 l 36 0 q 12 0 14 14 l 2 22 Z" fill="#171c28"/>
+    <text x="258" y="152" text-anchor="middle" font-size="12" fill="#8f9ab0">LT</text>
+    <text x="598" y="152" text-anchor="middle" font-size="12" fill="#8f9ab0">RT</text>
+    <!-- bumpers (flush with the body top edge y=168) -->
+    <rect x="192" y="152" width="140" height="20" rx="10" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
+    <text x="262" y="167" text-anchor="middle" font-size="12" fill="#8f9ab0">LB</text>
+    <rect x="528" y="152" width="140" height="20" rx="10" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
+    <text x="598" y="167" text-anchor="middle" font-size="12" fill="#ff9d8a" font-weight="bold">RB 机炮</text>
 
-    <!-- body: Xbox silhouette with grips -->
+    <!-- body: symmetric Xbox silhouette with grips -->
     <path d="M 218 168
              L 632 168
-             C 700 168 744 196 762 250
-             L 792 344 C 806 388 800 448 776 476
-             C 756 498 724 500 704 480
-             L 648 424 C 628 404 602 396 576 396
-             L 424 396
-             C 398 396 372 404 352 424
-             L 296 480
-             C 276 500 244 498 224 476
-             C 200 448 194 388 208 344
-             L 238 250
-             C 256 196 300 168 218 168 Z"
+             C 706 168 748 198 766 252
+             L 796 346 C 810 390 804 450 780 478
+             C 758 500 724 502 704 482
+             L 648 426 C 628 406 602 398 576 398
+             L 424 398
+             C 398 398 372 406 352 426
+             L 296 482
+             C 276 502 242 500 220 478
+             C 196 450 190 390 204 346
+             L 234 252
+             C 246 198 230 168 218 168 Z"
           fill="url(#shell)" stroke="#141926" stroke-width="3"/>
 
     <!-- Xbox nexus button -->
