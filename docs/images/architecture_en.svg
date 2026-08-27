@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="600" viewBox="0 0 980 600" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6478"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1f6fd6"/>
+    </marker>
+  </defs>
+  <rect width="980" height="600" fill="#f5f7fa"/>
+  <text x="490" y="44" text-anchor="middle" font-size="28" font-weight="bold" fill="#1c2333">System Architecture</text>
+  <text x="490" y="70" text-anchor="middle" font-size="14" fill="#5a6478">All control reaches the sandbox over TCP/IP (JSON protocol, port 50888)</text>
+
+  <!-- ==================== clients (left) ==================== -->
+  <g>
+    <rect x="40" y="120" width="240" height="120" rx="12" fill="#ffffff" stroke="#1f6fd6" stroke-width="2"/>
+    <text x="160" y="150" text-anchor="middle" font-size="17" font-weight="bold" fill="#1f6fd6">RL Client / Gym Env</text>
+    <g font-size="13" fill="#3a4356" text-anchor="middle">
+      <text x="160" y="176">oneVSoneEnv / twoVStwo …</text>
+      <text x="160" y="198">sticks · throttle · fire actions</text>
+      <text x="160" y="220">update_scene single-step</text>
+    </g>
+  </g>
+  <g>
+    <rect x="40" y="290" width="240" height="140" rx="12" fill="#ffffff" stroke="#c0392b" stroke-width="2"/>
+    <text x="160" y="320" text-anchor="middle" font-size="17" font-weight="bold" fill="#c0392b">LLM Mission Commander</text>
+    <text x="160" y="342" text-anchor="middle" font-size="13" fill="#3a4356">llm_commander/commander.py</text>
+    <g font-size="13" fill="#3a4356" text-anchor="middle">
+      <text x="160" y="368">Engine: rules or LLM API</text>
+      <text x="160" y="390">Tasking: engage / patrol / retreat</text>
+      <text x="160" y="412">(any OpenAI-compatible endpoint)</text>
+    </g>
+  </g>
+  <g>
+    <rect x="40" y="480" width="240" height="90" rx="12" fill="#ffffff" stroke="#8a93a8" stroke-width="2"/>
+    <text x="160" y="510" text-anchor="middle" font-size="17" font-weight="bold" fill="#5a6478">Human Player</text>
+    <g font-size="13" fill="#3a4356" text-anchor="middle">
+      <text x="160" y="536">Keyboard / Gamepad (see mapping)</text>
+      <text x="160" y="556">UserControlDevice</text>
+    </g>
+  </g>
+
+  <!-- ==================== network bus (middle) ==================== -->
+  <line x1="330" y1="100" x2="330" y2="570" stroke="#5a6478" stroke-width="4" stroke-linecap="round"/>
+  <text x="330" y="92" text-anchor="middle" font-size="15" font-weight="bold" fill="#3a4356">TCP/IP :50888</text>
+  <text x="345" y="330" font-size="12" fill="#8a93a8" transform="rotate(90 345 330)">4-byte length prefix + JSON commands</text>
+
+  <!-- client -> bus arrows -->
+  <line x1="280" y1="180" x2="322" y2="180" stroke="#1f6fd6" stroke-width="2.5" marker-end="url(#arrB)"/>
+  <line x1="280" y1="360" x2="322" y2="360" stroke="#c0392b" stroke-width="2.5" marker-end="url(#arr)"/>
+  <line x1="280" y1="525" x2="322" y2="525" stroke="#8a93a8" stroke-width="2.5" marker-end="url(#arr)"/>
+
+  <!-- bus -> sandbox -->
+  <line x1="338" y1="340" x2="400" y2="340" stroke="#5a6478" stroke-width="3" marker-end="url(#arr)"/>
+
+  <!-- ==================== sandbox (right) ==================== -->
+  <g>
+    <rect x="400" y="110" width="540" height="460" rx="16" fill="#252b38" stroke="#171c28" stroke-width="3"/>
+    <text x="670" y="148" text-anchor="middle" font-size="20" font-weight="bold" fill="#ffffff">dogfight sandbox (Harfang3D rendering + simulation)</text>
+    <text x="670" y="172" text-anchor="middle" font-size="13" fill="#8f9ab0">dogfight_sandbox_hg2 · network_server.py dispatches all commands</text>
+
+    <!-- inner boxes -->
+    <rect x="428" y="196" width="238" height="110" rx="10" fill="#324059" stroke="#4a5b7d" stroke-width="2"/>
+    <text x="547" y="224" text-anchor="middle" font-size="16" font-weight="bold" fill="#7db4ff">JSBSim 6-DOF</text>
+    <g font-size="12.5" fill="#c7cede" text-anchor="middle">
+      <text x="547" y="248">F-16 aero + F100 engine</text>
+      <text x="547" y="268">alpha-hold SAS / Auto-GCAS</text>
+      <text x="547" y="288">fixed 1/60 step (deterministic)</text>
+    </g>
+
+    <rect x="674" y="196" width="238" height="110" rx="10" fill="#3f3440" stroke="#6d4a5c" stroke-width="2"/>
+    <text x="793" y="224" text-anchor="middle" font-size="16" font-weight="bold" fill="#ff9d8a">Built-in AI & Autopilot</text>
+    <g font-size="12.5" fill="#e3d5da" text-anchor="middle">
+      <text x="793" y="248">IAControlDevice dogfight</text>
+      <text x="793" y="268">Autopilot heading/alt/speed</text>
+      <text x="793" y="288">TargettingDevice lock</text>
+    </g>
+
+    <rect x="428" y="326" width="238" height="110" rx="10" fill="#2e4238" stroke="#4a7d62" stroke-width="2"/>
+    <text x="547" y="354" text-anchor="middle" font-size="16" font-weight="bold" fill="#7dffc0">Trajectory Prediction</text>
+    <g font-size="12.5" fill="#d1e8dc" text-anchor="middle">
+      <text x="547" y="378">predict_path 10 s kinematic rollout</text>
+      <text x="547" y="398">green=friendly red=hostile polyline</text>
+      <text x="547" y="418">+5s/+10s cross markers</text>
+    </g>
+
+    <rect x="674" y="326" width="238" height="110" rx="10" fill="#463d2b" stroke="#7d6e46" stroke-width="2"/>
+    <text x="793" y="354" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffd97d">Task Labels</text>
+    <g font-size="12.5" fill="#e8e0cd" text-anchor="middle">
+      <text x="793" y="378">SET_PLANE_TASK command</text>
+      <text x="793" y="398">ENGAGE/PATROL floats above each jet</text>
+      <text x="793" y="418">commander decisions visualized live</text>
+    </g>
+
+    <rect x="428" y="456" width="484" height="86" rx="10" fill="#2a3140" stroke="#3f4a5f" stroke-width="2"/>
+    <text x="670" y="484" text-anchor="middle" font-size="15" font-weight="bold" fill="#c7cede">3D View · HUD · Radar</text>
+    <g font-size="12.5" fill="#8f9ab0" text-anchor="middle">
+      <text x="670" y="508">prediction + task labels + guns/missiles + island-chain sea scene</text>
+      <text x="670" y="528">windowed rendering, or headless renderless mode (RL training)</text>
+    </g>
+  </g>
+</svg>

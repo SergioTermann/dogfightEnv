@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="640" viewBox="0 0 1000 640" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+  <defs>
+    <linearGradient id="shell" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d4454"/><stop offset="1" stop-color="#20252f"/>
+    </linearGradient>
+    <linearGradient id="stickg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a5468"/><stop offset="1" stop-color="#2b3140"/>
+    </linearGradient>
+  </defs>
+  <rect width="1000" height="640" fill="#f5f7fa"/>
+  <text x="500" y="42" text-anchor="middle" font-size="28" font-weight="bold" fill="#1c2333">Xbox Xbox Gamepad Controls</text>
+  <text x="500" y="68" text-anchor="middle" font-size="13" fill="#5a6478">Bindings: dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json → "GamePad"</text>
+
+  <!-- ==================== Xbox Series controller ==================== -->
+  <!-- shifted left by 150 so the right grip clears the legend panel (x>=660) -->
+  <g transform="translate(-150,0)">
+    <!-- triggers (tabs overlapping the top edge, not floating above it) -->
+    <path d="M 218 152 q 6 -20 34 -20 l 36 0 q 12 0 14 14 l 2 22 Z" fill="#171c28"/>
+    <path d="M 558 152 q 6 -20 34 -20 l 36 0 q 12 0 14 14 l 2 22 Z" fill="#171c28"/>
+    <text x="258" y="152" text-anchor="middle" font-size="12" fill="#8f9ab0">LT</text>
+    <text x="598" y="152" text-anchor="middle" font-size="12" fill="#8f9ab0">RT</text>
+    <!-- bumpers (flush with the body top edge y=168) -->
+    <rect x="192" y="152" width="140" height="20" rx="10" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
+    <text x="262" y="167" text-anchor="middle" font-size="12" fill="#8f9ab0">LB</text>
+    <rect x="528" y="152" width="140" height="20" rx="10" fill="#2c3444" stroke="#171c28" stroke-width="2"/>
+    <text x="598" y="167" text-anchor="middle" font-size="12" fill="#ff9d8a" font-weight="bold">RB Gun</text>
+
+    <!-- body: symmetric Xbox silhouette with grips -->
+    <path d="M 218 168
+             L 632 168
+             C 706 168 748 198 766 252
+             L 796 346 C 810 390 804 450 780 478
+             C 758 500 724 502 704 482
+             L 648 426 C 628 406 602 398 576 398
+             L 424 398
+             C 398 398 372 406 352 426
+             L 296 482
+             C 276 502 242 500 220 478
+             C 196 450 190 390 204 346
+             L 234 252
+             C 246 198 230 168 218 168 Z"
+          fill="url(#shell)" stroke="#141926" stroke-width="3"/>
+
+    <!-- Xbox nexus button -->
+    <circle cx="425" cy="205" r="22" fill="#d8dee9" stroke="#9aa4b8" stroke-width="2"/>
+    <text x="425" y="213" text-anchor="middle" font-size="20" font-weight="bold" fill="#5a6478">✕</text>
+    <!-- View button -->
+    <g>
+      <circle cx="362" cy="212" r="13" fill="#2b3140" stroke="#4a5468" stroke-width="2"/>
+      <rect x="356" y="206" width="8" height="8" fill="none" stroke="#8f9ab0" stroke-width="1.6"/>
+      <rect x="360" y="210" width="8" height="8" fill="none" stroke="#8f9ab0" stroke-width="1.6"/>
+    </g>
+    <!-- Menu button -->
+    <g>
+      <circle cx="488" cy="212" r="13" fill="#2b3140" stroke="#4a5468" stroke-width="2"/>
+      <line x1="482" y1="207" x2="494" y2="207" stroke="#8f9ab0" stroke-width="1.8"/>
+      <line x1="482" y1="212" x2="494" y2="212" stroke="#8f9ab0" stroke-width="1.8"/>
+      <line x1="482" y1="217" x2="494" y2="217" stroke="#8f9ab0" stroke-width="1.8"/>
+    </g>
+
+    <!-- left stick (upper-left) -->
+    <circle cx="292" cy="266" r="46" fill="#171c28"/>
+    <circle cx="292" cy="266" r="34" fill="url(#stickg)" stroke="#5a6478" stroke-width="3"/>
+    <circle cx="292" cy="266" r="24" fill="#39414f" stroke="#4a5468" stroke-width="2"/>
+    <circle cx="292" cy="266" r="10" fill="#4a5468"/>
+
+    <!-- ABXY (upper-right), Xbox colors -->
+    <circle cx="590" cy="240" r="19" fill="#f4c20d" stroke="#c79c06" stroke-width="2.5"/>
+    <text x="590" y="246" text-anchor="middle" font-size="16" font-weight="bold" fill="#4a3a00">Y</text>
+    <circle cx="553" cy="277" r="19" fill="#2f6fd8" stroke="#1f4f9e" stroke-width="2.5"/>
+    <text x="553" y="283" text-anchor="middle" font-size="16" font-weight="bold" fill="#dbe7ff">X</text>
+    <circle cx="627" cy="277" r="19" fill="#d83b2f" stroke="#9e271e" stroke-width="2.5"/>
+    <text x="627" y="283" text-anchor="middle" font-size="16" font-weight="bold" fill="#ffe3df">B</text>
+    <circle cx="590" cy="314" r="19" fill="#2f9e4f" stroke="#1f7238" stroke-width="2.5"/>
+    <text x="590" y="320" text-anchor="middle" font-size="16" font-weight="bold" fill="#dcffe6">A</text>
+
+    <!-- d-pad (lower-left, Xbox cross) -->
+    <g>
+      <circle cx="318" cy="352" r="42" fill="#20252f"/>
+      <path d="M 310 312 h 16 v 32 h 32 v 16 h -32 v 32 h -16 v -32 h -32 v -16 h 32 Z"
+            fill="#39414f" stroke="#4a5468" stroke-width="2"/>
+    </g>
+
+    <!-- right stick (lower-center-right) -->
+    <circle cx="452" cy="330" r="46" fill="#171c28"/>
+    <circle cx="452" cy="330" r="34" fill="url(#stickg)" stroke="#5a6478" stroke-width="3"/>
+    <circle cx="452" cy="330" r="24" fill="#39414f" stroke="#4a5468" stroke-width="2"/>
+    <circle cx="452" cy="330" r="10" fill="#4a5468"/>
+  </g>
+
+  <!-- ==================== on-pad hints ==================== -->
+  <g font-size="14" font-weight="bold" transform="translate(-150,0)">
+    <rect x="188" y="176" width="206" height="22" rx="11" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
+    <text x="291" y="192" text-anchor="middle" fill="#1f6fd6">L stick = Thrust Y · Yaw X · click=IA</text>
+    <rect x="346" y="382" width="206" height="24" rx="12" fill="#e3eefc" stroke="#1f6fd6" stroke-width="1.5"/>
+    <text x="449" y="399" text-anchor="middle" fill="#1f6fd6">R stick = Roll X · Pitch Y</text>
+    <rect x="228" y="418" width="188" height="22" rx="11" fill="#fdf4dc" stroke="#b8922f" stroke-width="1.5"/>
+    <text x="322" y="434" text-anchor="middle" font-size="13" fill="#8a6d1a">D-pad ↑↓ Brake · ←→ Flaps</text>
+  </g>
+
+  <!-- ==================== right legend panel ==================== -->
+  <g>
+    <rect x="660" y="100" width="316" height="470" rx="14" fill="#ffffff" stroke="#d4dae5" stroke-width="2"/>
+    <text x="818" y="136" text-anchor="middle" font-size="18" font-weight="bold" fill="#1c2333">Function Map</text>
+
+    <circle cx="686" cy="172" r="8" fill="#1f6fd6"/>
+    <text x="702" y="178" font-size="15" font-weight="bold" fill="#1f6fd6">Flight</text>
+    <g font-size="13.5" fill="#3a4356">
+      <text x="702" y="204">Left stick Y → Thrust</text>
+      <text x="702" y="226">Left stick X → Yaw / rudder</text>
+      <text x="702" y="248">Right stick X → Roll / ailerons</text>
+      <text x="702" y="270">Right stick Y → Pitch / elevator</text>
+    </g>
+    <line x1="678" y1="286" x2="958" y2="286" stroke="#e6eaf2" stroke-width="2"/>
+
+    <circle cx="686" cy="308" r="8" fill="#c0392b"/>
+    <text x="702" y="314" font-size="15" font-weight="bold" fill="#c0392b">Weapons</text>
+    <g font-size="13.5" fill="#3a4356">
+      <text x="702" y="340">X button → Fire missile</text>
+      <text x="702" y="362">RB (hold) → Machine gun</text>
+      <text x="702" y="384">B button → Afterburner toggle</text>
+    </g>
+    <line x1="678" y1="400" x2="958" y2="400" stroke="#e6eaf2" stroke-width="2"/>
+
+    <circle cx="686" cy="422" r="8" fill="#b8922f"/>
+    <text x="702" y="428" font-size="15" font-weight="bold" fill="#8a6d1a">Systems</text>
+    <g font-size="13.5" fill="#3a4356">
+      <text x="702" y="454">Y button → Next target</text>
+      <text x="702" y="476">View button → Landing gear</text>
+      <text x="702" y="498">Left stick click → hand to IA autopilot</text>
+      <text x="702" y="520">D-pad ↑↓ → Airbrake +/−</text>
+      <text x="702" y="542">D-pad ←→ → Flaps −/+</text>
+    </g>
+  </g>
+  <text x="500" y="598" text-anchor="middle" font-size="12.5" fill="#8a93a8">Keyboard: arrows pitch/roll · Home/End throttle · Space afterburner · Enter gun · F1 missile · F5 rearm</text>
+  <text x="500" y="620" text-anchor="middle" font-size="12.5" fill="#8a93a8">T next target · G gear · B/N airbrake · C/V flaps · I hand to IA · A autopilot · E easy steering</text>
+</svg>

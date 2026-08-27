@@ -16,7 +16,7 @@ An **air-combat reinforcement learning environment** built on the [Harfang3D](ht
 | 🤖 **LLM mission commander** | An external commander watches the whole battle and assigns `engage / patrol / retreat` tasks per aircraft; rule ↔ LLM engine switch in config |
 | 📈 **Trajectory prediction** | Each aircraft's next 10 seconds of flight drawn live in the 3D view (green = friendly / red = hostile, +5s/+10s cross markers) |
 
-![Architecture](docs/images/architecture.svg)
+![Architecture](docs/images/architecture_en.svg)
 
 ## Quick Start
 
@@ -133,7 +133,7 @@ Switch views instantly on the numpad (`2/8/4/6` rear/front/left/right chase, `5`
 
 Plug in an Xbox-layout gamepad and fly (bindings: `dogfight_sandbox_hg2/source/scripts/aircraft_user_inputs_mapping.json` → `"GamePad"`):
 
-![Xbox gamepad mapping](docs/images/gamepad_mapping.svg)
+![Xbox gamepad mapping](docs/images/gamepad_mapping_en.svg)
 
 **Keyboard**: `↑↓←→` pitch/roll · `Home/End` throttle ± · `Space` afterburner · `Enter` machine gun · `F1` missile · `F5` rearm · `T` next target · `G` gear · `B/N` airbrake · `C/V` flaps · `I` hand to IA · `A` autopilot · `E` easy steering
 
