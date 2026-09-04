@@ -1,65 +1,44 @@
+<a id="top"></a>
+
 <div align="center">
 
-# dogfightEnv
+<img src="docs/images/banner_zh.svg" alt="dogfightEnv —— 基于 Harfang3D 空战沙盒的强化学习仿真环境" width="100%"/>
 
-**基于 Harfang3D 空战沙盒的强化学习仿真环境**
-**JSBSim 六自由度物理 · 大模型任务指挥官 · 未来轨迹预测**
+<br/>
 
 [![Stars](https://img.shields.io/github/stars/SergioTermann/dogfightEnv?style=flat-square&logo=github)](https://github.com/SergioTermann/dogfightEnv/stargazers)
 [![Forks](https://img.shields.io/github/forks/SergioTermann/dogfightEnv?style=flat-square&logo=github)](https://github.com/SergioTermann/dogfightEnv/network/members)
 [![Issues](https://img.shields.io/github/issues/SergioTermann/dogfightEnv?style=flat-square&logo=github)](https://github.com/SergioTermann/dogfightEnv/issues)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](dogfight_sandbox_hg2/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue?style=flat-square&logo=python&logoColor=white)](#-快速开始)
-[![JSBSim](https://img.shields.io/badge/JSBSim-6--DOF%20物理-ff6b35?style=flat-square)](#-jsbsim-六自由度飞行仿真)
-[![Harfang3D](https://img.shields.io/badge/Harfang3D-%E6%B8%B2%E6%9F%93-2f7dd1?style=flat-square)](https://harfang3d.com/)
+[![Python](https://img.shields.io/badge/python-3.8%2B-306998?style=flat-square&logo=python&logoColor=white)](#-快速开始)
 [![PyTorch](https://img.shields.io/badge/PyTorch-%E2%89%A52.0-ee4c2c?style=flat-square&logo=pytorch&logoColor=white)](#-rl-训练套件)
-[![Platform](https://img.shields.io/badge/platform-Windows-0078d6?style=flat-square&logo=windows11&logoColor=white)](#-快速开始)
+[![Platform](https://img.shields.io/badge/platform-Windows-5e819e?style=flat-square&logo=windows11&logoColor=white)](#-快速开始)
 
 <br/>
 
-<a href="#-快速开始"><img src="https://img.shields.io/badge/🚀_快速开始-2EA44F?style=for-the-badge&logoColor=white" alt="快速开始"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md"><img src="https://img.shields.io/badge/📖_网络协议文档-2F7DD1?style=for-the-badge" alt="网络协议文档"/></a>
-<a href="#-大模型任务指挥官"><img src="https://img.shields.io/badge/🎖️_LLM_指挥官-8250DF?style=for-the-badge" alt="LLM 指挥官"/></a>
-<a href="#-rl-训练套件"><img src="https://img.shields.io/badge/🎓_RL_训练-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="RL 训练"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/🐛_报告问题-CF2222?style=for-the-badge" alt="报告问题"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/stargazers"><img src="https://img.shields.io/badge/⭐_点个_Star-F1C40F?style=for-the-badge&logo=github&logoColor=black" alt="点个 Star"/></a>
+<a href="#-快速开始"><img src="https://img.shields.io/badge/🚀_快速开始-2EA44F?style=for-the-badge" alt="快速开始"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md"><img src="https://img.shields.io/badge/📖_协议文档-1F6FEB?style=for-the-badge" alt="协议文档"/></a>
+<a href="#-rl-训练套件"><img src="https://img.shields.io/badge/🎓_RL_训练-1F6FEB?style=for-the-badge&logo=pytorch&logoColor=white" alt="RL 训练"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💬_问题反馈-30363D?style=for-the-badge" alt="问题反馈"/></a>
 
 **[English](README.en.md) | 简体中文**
 
-<img src="docs/images/screenshot_hero.png" alt="1v1 空战实机画面" width="100%"/>
-
-▲ 渲染模式下的 1v1 交战：HUD / 雷达 / 绿色未来预测航线同框
+✨ [核心特性](#-核心特性) · 🏗️ [系统架构](#-系统架构) · 🚀 [快速开始](#-快速开始) · 🛩️ [JSBSim 仿真](#-jsbsim-六自由度飞行仿真) · 🔮 [轨迹预测](#-未来轨迹预测) · 🎖️ [LLM 指挥官](#-大模型任务指挥官) · 🎓 [RL 训练](#-rl-训练套件) · 🕹️ [操控](#-操控) · 📷 [视角](#-多视角观察) · 🧪 [测试](#-测试) · 🗺️ [路线](#-开发路线) · 📄 [许可证](#-许可证)
 
 </div>
 
 ---
 
-<details>
-<summary>📑 目录 · 点击按钮直达章节</summary>
-<br/>
-
-| ✨ 核心特性 | 🏗️ 系统架构 | 🚀 快速开始 |
-|:---:|:---:|:---:|
-| <a href="#-核心特性"><img src="https://img.shields.io/badge/✨_核心特性-2F7DD1?style=for-the-badge"/></a> | <a href="#-系统架构"><img src="https://img.shields.io/badge/🏗️_系统架构-27AE60?style=for-the-badge"/></a> | <a href="#-快速开始"><img src="https://img.shields.io/badge/🚀_快速开始-E67E22?style=for-the-badge"/></a> |
-| **🛩️ JSBSim 仿真** | **🔮 轨迹预测** | **🎖️ LLM 指挥官** |
-| <a href="#-jsbsim-六自由度飞行仿真"><img src="https://img.shields.io/badge/🛩️_JSBSim_仿真-2F7DD1?style=for-the-badge"/></a> | <a href="#-未来轨迹预测"><img src="https://img.shields.io/badge/🔮_轨迹预测-27AE60?style=for-the-badge"/></a> | <a href="#-大模型任务指挥官"><img src="https://img.shields.io/badge/🎖️_LLM_指挥官-8250DF?style=for-the-badge"/></a> |
-| **🎓 RL 训练套件** | **🕹️ 操控** | **📷 多视角观察** |
-| <a href="#-rl-训练套件"><img src="https://img.shields.io/badge/🎓_RL_训练套件-EE4C2C?style=for-the-badge"/></a> | <a href="#-操控"><img src="https://img.shields.io/badge/🕹️_操控-16A085?style=for-the-badge"/></a> | <a href="#-多视角观察"><img src="https://img.shields.io/badge/📷_多视角观察-2F7DD1?style=for-the-badge"/></a> |
-| **🧪 测试** | **⚠️ 已知限制** | **🗺️ 开发路线** |
-| <a href="#-测试"><img src="https://img.shields.io/badge/🧪_测试-27AE60?style=for-the-badge"/></a> | <a href="#-已知限制"><img src="https://img.shields.io/badge/⚠️_已知限制-E67E22?style=for-the-badge"/></a> | <a href="#-开发路线"><img src="https://img.shields.io/badge/🗺️_开发路线-8250DF?style=for-the-badge"/></a> |
-
-🤝 [参与贡献](#-参与贡献) · 🙏 [致谢](#-致谢) · 📄 [许可证](#-许可证)
-
-</details>
-
 ## ✨ 核心特性
 
-- 🛩️ **JSBSim 六自由度物理** —— F-16A 气动数据 + F100-PW-229 发动机（含加力），真实失速与升阻特性；固定 1/60 步长，RL 训练完全确定
-- 🎖️ **大模型任务指挥官** —— 外置指挥官进程观察全局战况，为每架飞机分配 `engage / patrol / retreat` 任务；规则引擎 ↔ LLM 一键切换
-- 📈 **未来轨迹预测** —— 每架飞机未来 10 秒航线实时画进 3D 视图（绿=友军 / 红=敌军，+5s / +10s 十字标记）
-- 🌐 **统一 TCP/IP 协议** —— RL 客户端、指挥官、真人玩家共用 `IP:50888` JSON 协议，渲染 / 无头双模式（[完整协议文档](https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md)）
-- 🎮 **人机同屏** —— 键盘 / Xbox 手柄直接飞行，八种镜头即时切换，可作为专家给 RL 录制演示数据
-- 🧪 **自带测试** —— 14 项物理回归 + 12 项指挥官端到端 + 10 项训练冒烟，改代码有护栏
+| | 特性 | 说明 |
+|:---:|---|---|
+| 🛩️ | **JSBSim 六自由度物理** | F-16A 气动数据 + F100-PW-229 发动机（含加力），真实失速与升阻特性；固定 1/60 步长，RL 训练完全确定 |
+| 🎖️ | **大模型任务指挥官** | 外置指挥官进程观察全局战况，为每架飞机分配 `engage / patrol / retreat` 任务；规则引擎 ↔ LLM 一键切换 |
+| 📈 | **未来轨迹预测** | 每架飞机未来 10 秒航线实时画进 3D 视图（绿=友军 / 红=敌军，+5s / +10s 十字标记） |
+| 🌐 | **统一 TCP/IP 协议** | RL 客户端、指挥官、真人玩家共用 `IP:50888` JSON 协议，渲染 / 无头双模式（[完整协议文档](https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md)） |
+| 🎮 | **人机同屏** | 键盘 / Xbox 手柄直接飞行，八种镜头即时切换，可作为专家给 RL 录制演示数据 |
+| 🧪 | **自带测试** | 14 项物理回归 + 12 项指挥官端到端 + 10 项训练冒烟，改代码有护栏 |
 
 ## 🏗️ 系统架构
 
@@ -77,7 +56,7 @@
 | 训练套件 | `torch ≥ 2.0`：`pip install -r requirements-train.txt` |
 | GPU | 可选，CUDA 加速训练 |
 
-### 1. 启动沙盒
+**1️⃣ 启动沙盒**
 
 ```bash
 cd dogfight_sandbox_hg2/source
@@ -87,7 +66,7 @@ cd dogfight_sandbox_hg2/source
 - `mission=1 / 2 / 3` 对应 1v1 / 2v2 / 3v3 网络任务（缺省 1v1）；也可运行 `dogfight_sandbox_hg2\start.bat` 从菜单选择
 - 窗口标题显示 `Harfang` 即就绪；服务监听本机局域网 IP 的 `50888` 端口（窗口左上角会显示 `HOST / PORT`）
 
-### 2. 接入 Gym 风格 RL 环境
+**2️⃣ 接入 Gym 风格 RL 环境**
 
 ```python
 from oneVSoneEnv import oneVSoneEnv   # 或 twoVStwo / IA_enemy_env ...
@@ -98,9 +77,7 @@ action = env.action_space.sample()    # [roll, pitch, yaw, thrust, fire]
 obs, reward, done, info = env.step(action)
 ```
 
-### 3. 启动大模型任务指挥官
-
-另开一个终端：
+**3️⃣ 启动大模型任务指挥官**（另开一个终端）
 
 ```bash
 cd llm_commander
@@ -175,7 +152,7 @@ cd llm_commander
 `training/` 提供自研模块化算法套件（纯 PyTorch，零新增依赖）+ 统一训练入口：
 
 | 算法 | 类型 | 动作空间 | 关键组件 |
-|---|---|---|---|
+|---|---|:---:|---|
 | `ppo` | 在策略 | 连续 Box | GAE、clip 目标、高斯策略 |
 | `sac` | 离策略 | 连续 Box | 双 Q、温度自动调、软更新 |
 | `rainbow` | 离策略 | 离散网格（默认 54 档） | n-step、双 Q、决斗、NoisyNet、PER、C51 |
@@ -270,16 +247,16 @@ python dogfight_sandbox_hg2/tools/test_training_smoke.py
 - [ ] 多客户端并发（指挥官与 RL 环境同时在线）
 - [ ] 更多机型的 JSBSim 气动数据
 
-有想法？<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💬_提个_Issue-2F7DD1?style=flat-square" alt="提 Issue"/></a>
+有想法？欢迎 [提 Issue](https://github.com/SergioTermann/dogfightEnv/issues/new)。
 
 ## 🤝 参与贡献
 
 欢迎 Issue 与 PR！流程：Fork → 建分支 → 改动后跑通 [测试](#-测试) → 提 PR。
 
 <a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/🐛_提交_Bug-CF2222?style=for-the-badge" alt="提交 Bug"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💡_功能建议-F1C40F?style=for-the-badge" alt="功能建议"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💡_功能建议-1F6FEB?style=for-the-badge" alt="功能建议"/></a>
 <a href="https://github.com/SergioTermann/dogfightEnv/compare"><img src="https://img.shields.io/badge/🔀_提交_PR-2EA44F?style=for-the-badge" alt="提交 PR"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/fork"><img src="https://img.shields.io/badge/🍴_Fork_仓库-2F7DD1?style=for-the-badge&logo=github&logoColor=white" alt="Fork 仓库"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/fork"><img src="https://img.shields.io/badge/🍴_Fork_仓库-30363D?style=for-the-badge&logo=github&logoColor=white" alt="Fork 仓库"/></a>
 
 ## 🙏 致谢
 
@@ -296,18 +273,14 @@ python dogfight_sandbox_hg2/tools/test_training_smoke.py
 
 **如果这个项目对你有帮助，欢迎点一个 ⭐**
 
-<a href="https://github.com/SergioTermann/dogfightEnv"><img height="170" src="https://github-readme-stats.vercel.app/api/pin?username=SergioTermann&repo=dogfightEnv&show_icons=true" alt="dogfightEnv 仓库卡片"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv"><img height="165" src="https://github-readme-stats.vercel.app/api/pin?username=SergioTermann&repo=dogfightEnv&show_icons=true" alt="dogfightEnv 仓库卡片"/></a>
 
-<br/><br/>
+<br/>
 
-<a href="https://harfang3d.com/"><img src="https://img.shields.io/badge/Powered_by-Harfang3D-2f7dd1?style=flat-square" alt="Harfang3D"/></a>
-<a href="https://github.com/JSBSim-Team/jsbsim"><img src="https://img.shields.io/badge/Powered_by-JSBSim-ff6b35?style=flat-square" alt="JSBSim"/></a>
-<a href="https://pytorch.org/"><img src="https://img.shields.io/badge/Powered_by-PyTorch-ee4c2c?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch"/></a>
+Powered by [Harfang3D](https://harfang3d.com/) · [JSBSim](https://github.com/JSBSim-Team/jsbsim) · [PyTorch](https://pytorch.org/)
 
-<br/><br/>
+<img src="https://api.star-history.com/svg?repos=SergioTermann/dogfightEnv&type=Date" alt="Star History" width="70%"/>
 
-<img src="https://api.star-history.com/svg?repos=SergioTermann/dogfightEnv&type=Date" alt="Star History" width="80%"/>
-
-[⬆ 回到顶部](#dogfightenv)
+[⬆ 回到顶部](#top)
 
 </div>

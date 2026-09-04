@@ -1,65 +1,44 @@
+<a id="top"></a>
+
 <div align="center">
 
-# dogfightEnv
+<img src="docs/images/banner_en.svg" alt="dogfightEnv — an air-combat RL environment built on Harfang3D" width="100%"/>
 
-**An air-combat RL environment built on the Harfang3D dogfight sandbox**
-**JSBSim 6-DOF physics · LLM mission commander · trajectory prediction**
+<br/>
 
 [![Stars](https://img.shields.io/github/stars/SergioTermann/dogfightEnv?style=flat-square&logo=github)](https://github.com/SergioTermann/dogfightEnv/stargazers)
 [![Forks](https://img.shields.io/github/forks/SergioTermann/dogfightEnv?style=flat-square&logo=github)](https://github.com/SergioTermann/dogfightEnv/network/members)
 [![Issues](https://img.shields.io/github/issues/SergioTermann/dogfightEnv?style=flat-square&logo=github)](https://github.com/SergioTermann/dogfightEnv/issues)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](dogfight_sandbox_hg2/LICENSE)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue?style=flat-square&logo=python&logoColor=white)](#-quick-start)
-[![JSBSim](https://img.shields.io/badge/JSBSim-6--DOF%20physics-ff6b35?style=flat-square)](#-jsbsim-6-dof-flight-dynamics)
-[![Harfang3D](https://img.shields.io/badge/Harfang3D-render-2f7dd1?style=flat-square)](https://harfang3d.com/)
+[![Python](https://img.shields.io/badge/python-3.8%2B-306998?style=flat-square&logo=python&logoColor=white)](#-quick-start)
 [![PyTorch](https://img.shields.io/badge/PyTorch-%E2%89%A52.0-ee4c2c?style=flat-square&logo=pytorch&logoColor=white)](#-rl-training-suite)
-[![Platform](https://img.shields.io/badge/platform-Windows-0078d6?style=flat-square&logo=windows11&logoColor=white)](#-quick-start)
+[![Platform](https://img.shields.io/badge/platform-Windows-5e819e?style=flat-square&logo=windows11&logoColor=white)](#-quick-start)
 
 <br/>
 
 <a href="#-quick-start"><img src="https://img.shields.io/badge/🚀_Quick_Start-2EA44F?style=for-the-badge" alt="Quick Start"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md"><img src="https://img.shields.io/badge/📖_Network_API_Docs-2F7DD1?style=for-the-badge" alt="Network API Docs"/></a>
-<a href="#-llm-mission-commander"><img src="https://img.shields.io/badge/🎖️_LLM_Commander-8250DF?style=for-the-badge" alt="LLM Commander"/></a>
-<a href="#-rl-training-suite"><img src="https://img.shields.io/badge/🎓_RL_Training-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="RL Training"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/🐛_Report_Issue-CF2222?style=for-the-badge" alt="Report Issue"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/stargazers"><img src="https://img.shields.io/badge/⭐_Give_a_Star-F1C40F?style=for-the-badge&logo=github&logoColor=black" alt="Give a Star"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md"><img src="https://img.shields.io/badge/📖_API_Docs-1F6FEB?style=for-the-badge" alt="API Docs"/></a>
+<a href="#-rl-training-suite"><img src="https://img.shields.io/badge/🎓_RL_Training-1F6FEB?style=for-the-badge&logo=pytorch&logoColor=white" alt="RL Training"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💬_Feedback-30363D?style=for-the-badge" alt="Feedback"/></a>
 
 **English | [简体中文](README.md)**
 
-<img src="docs/images/screenshot_hero.png" alt="Live 1v1 dogfight" width="100%"/>
-
-▲ A live 1v1 engagement in rendered mode: HUD / radar / green predicted path in one frame
+✨ [Key Features](#-key-features) · 🏗️ [Architecture](#-architecture) · 🚀 [Quick Start](#-quick-start) · 🛩️ [JSBSim Physics](#-jsbsim-6-dof-flight-dynamics) · 🔮 [Prediction](#-trajectory-prediction) · 🎖️ [LLM Commander](#-llm-mission-commander) · 🎓 [RL Training](#-rl-training-suite) · 🕹️ [Controls](#-controls) · 📷 [Views](#-camera-views) · 🧪 [Tests](#-tests) · 🗺️ [Roadmap](#-roadmap) · 📄 [License](#-license)
 
 </div>
 
 ---
 
-<details>
-<summary>📑 Table of Contents · click a button to jump</summary>
-<br/>
-
-| ✨ Key Features | 🏗️ Architecture | 🚀 Quick Start |
-|:---:|:---:|:---:|
-| <a href="#-key-features"><img src="https://img.shields.io/badge/✨_Key_Features-2F7DD1?style=for-the-badge"/></a> | <a href="#-architecture"><img src="https://img.shields.io/badge/🏗️_Architecture-27AE60?style=for-the-badge"/></a> | <a href="#-quick-start"><img src="https://img.shields.io/badge/🚀_Quick_Start-E67E22?style=for-the-badge"/></a> |
-| **🛩️ JSBSim Physics** | **🔮 Prediction** | **🎖️ LLM Commander** |
-| <a href="#-jsbsim-6-dof-flight-dynamics"><img src="https://img.shields.io/badge/🛩️_JSBSim_Physics-2F7DD1?style=for-the-badge"/></a> | <a href="#-trajectory-prediction"><img src="https://img.shields.io/badge/🔮_Prediction-27AE60?style=for-the-badge"/></a> | <a href="#-llm-mission-commander"><img src="https://img.shields.io/badge/🎖️_LLM_Commander-8250DF?style=for-the-badge"/></a> |
-| **🎓 RL Training** | **🕹️ Controls** | **📷 Camera Views** |
-| <a href="#-rl-training-suite"><img src="https://img.shields.io/badge/🎓_RL_Training-EE4C2C?style=for-the-badge"/></a> | <a href="#-controls"><img src="https://img.shields.io/badge/🕹️_Controls-16A085?style=for-the-badge"/></a> | <a href="#-camera-views"><img src="https://img.shields.io/badge/📷_Camera_Views-2F7DD1?style=for-the-badge"/></a> |
-| **🧪 Tests** | **⚠️ Limitations** | **🗺️ Roadmap** |
-| <a href="#-tests"><img src="https://img.shields.io/badge/🧪_Tests-27AE60?style=for-the-badge"/></a> | <a href="#-known-limitations"><img src="https://img.shields.io/badge/⚠️_Limitations-E67E22?style=for-the-badge"/></a> | <a href="#-roadmap"><img src="https://img.shields.io/badge/🗺️_Roadmap-8250DF?style=for-the-badge"/></a> |
-
-🤝 [Contributing](#-contributing) · 🙏 [Acknowledgments](#-acknowledgments) · 📄 [License](#-license)
-
-</details>
-
 ## ✨ Key Features
 
-- 🛩️ **JSBSim 6-DOF physics** — F-16A aerodynamics + F100-PW-229 engine (with afterburner), realistic stall / lift-drag behavior; fixed 1/60 step, fully deterministic for RL
-- 🎖️ **LLM mission commander** — an external commander process watches the whole battle and assigns `engage / patrol / retreat` tasks per aircraft; rule ↔ LLM engine switch in one config line
-- 📈 **Trajectory prediction** — each aircraft's next 10 seconds of flight drawn live in the 3D view (green = friendly / red = hostile, +5s / +10s cross markers)
-- 🌐 **Unified TCP/IP protocol** — RL clients, the commander and human players all speak the same JSON protocol on `IP:50888`; rendered and headless modes ([full API docs](https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md))
-- 🎮 **Humans in the loop** — fly directly with keyboard / Xbox-layout gamepad, switch between eight camera views, and record expert demonstrations for RL
-- 🧪 **Tested** — 14 physics regression checks + 12 commander end-to-end checks + 10 training smoke checks
+| | Feature | Description |
+|:---:|---|---|
+| 🛩️ | **JSBSim 6-DOF physics** | F-16A aerodynamics + F100-PW-229 engine (with afterburner), realistic stall / lift-drag behavior; fixed 1/60 step, fully deterministic for RL |
+| 🎖️ | **LLM mission commander** | An external commander process watches the whole battle and assigns `engage / patrol / retreat` tasks per aircraft; rule ↔ LLM engine switch in one config line |
+| 📈 | **Trajectory prediction** | Each aircraft's next 10 seconds of flight drawn live in the 3D view (green = friendly / red = hostile, +5s / +10s cross markers) |
+| 🌐 | **Unified TCP/IP protocol** | RL clients, the commander and human players all speak the same JSON protocol on `IP:50888`; rendered and headless modes ([full API docs](https://github.com/SergioTermann/dogfightEnv/blob/main/dogfight_sandbox_hg2/documentation_network.md)) |
+| 🎮 | **Humans in the loop** | Fly directly with keyboard / Xbox-layout gamepad, switch between eight camera views, and record expert demonstrations for RL |
+| 🧪 | **Tested** | 14 physics regression checks + 12 commander end-to-end checks + 10 training smoke checks |
 
 ## 🏗️ Architecture
 
@@ -77,7 +56,7 @@ Every controller (RL client / LLM commander / human player) plugs into the sandb
 | Training suite | `torch ≥ 2.0`: `pip install -r requirements-train.txt` |
 | GPU | Optional, CUDA speeds up training |
 
-### 1. Start the sandbox
+**1️⃣ Start the sandbox**
 
 ```bash
 cd dogfight_sandbox_hg2/source
@@ -87,7 +66,7 @@ cd dogfight_sandbox_hg2/source
 - `mission=1 / 2 / 3` selects the 1v1 / 2v2 / 3v3 network mission (default 1v1); or run `dogfight_sandbox_hg2\start.bat` and pick from the menu
 - Ready when the window titled `Harfang` appears; the server listens on port `50888` at the machine's LAN IP (shown as `HOST / PORT` in the window's top-left corner)
 
-### 2. Connect a Gym-style RL environment
+**2️⃣ Connect a Gym-style RL environment**
 
 ```python
 from oneVSoneEnv import oneVSoneEnv   # or twoVStwo / IA_enemy_env ...
@@ -98,9 +77,7 @@ action = env.action_space.sample()    # [roll, pitch, yaw, thrust, fire]
 obs, reward, done, info = env.step(action)
 ```
 
-### 3. Start the LLM mission commander
-
-In a second terminal:
+**3️⃣ Start the LLM mission commander** (second terminal)
 
 ```bash
 cd llm_commander
@@ -175,7 +152,7 @@ Config: `config.json` → `"FlightPrediction": {"enabled": true, "horizon_s": 10
 `training/` provides a self-contained modular algorithm suite (pure PyTorch, zero new dependencies) with a unified entry point:
 
 | Algorithm | Type | Action space | Key components |
-|---|---|---|---|
+|---|---|:---:|---|
 | `ppo` | on-policy | continuous Box | GAE, clipped objective, Gaussian policy |
 | `sac` | off-policy | continuous Box | twin Q, auto temperature, soft updates |
 | `rainbow` | off-policy | discrete grid (54 by default) | n-step, double-Q, dueling, NoisyNet, PER, C51 |
@@ -270,16 +247,16 @@ python dogfight_sandbox_hg2/tools/test_training_smoke.py
 - [ ] Multiple simultaneous clients (commander + RL environment online together)
 - [ ] JSBSim aerodynamic data for more aircraft types
 
-Ideas? <a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💬_Open_an_Issue-2F7DD1?style=flat-square" alt="Open an issue"/></a>
+Ideas? [Open an issue](https://github.com/SergioTermann/dogfightEnv/issues/new).
 
 ## 🤝 Contributing
 
 Issues and PRs are welcome! Flow: fork → branch → make your change, keep the [tests](#-tests) green → open a PR.
 
 <a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/🐛_Report_a_Bug-CF2222?style=for-the-badge" alt="Report a Bug"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💡_Request_a_Feature-F1C40F?style=for-the-badge" alt="Request a Feature"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/issues/new"><img src="https://img.shields.io/badge/💡_Request_a_Feature-1F6FEB?style=for-the-badge" alt="Request a Feature"/></a>
 <a href="https://github.com/SergioTermann/dogfightEnv/compare"><img src="https://img.shields.io/badge/🔀_Open_a_PR-2EA44F?style=for-the-badge" alt="Open a PR"/></a>
-<a href="https://github.com/SergioTermann/dogfightEnv/fork"><img src="https://img.shields.io/badge/🍴_Fork_the_Repo-2F7DD1?style=for-the-badge&logo=github&logoColor=white" alt="Fork the Repo"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv/fork"><img src="https://img.shields.io/badge/🍴_Fork_the_Repo-30363D?style=for-the-badge&logo=github&logoColor=white" alt="Fork the Repo"/></a>
 
 ## 🙏 Acknowledgments
 
@@ -296,18 +273,14 @@ The bundled [dogfight_sandbox_hg2](dogfight_sandbox_hg2/) sandbox originates fro
 
 **If this project helps you, please consider giving it a ⭐**
 
-<a href="https://github.com/SergioTermann/dogfightEnv"><img height="170" src="https://github-readme-stats.vercel.app/api/pin?username=SergioTermann&repo=dogfightEnv&show_icons=true" alt="dogfightEnv repo card"/></a>
+<a href="https://github.com/SergioTermann/dogfightEnv"><img height="165" src="https://github-readme-stats.vercel.app/api/pin?username=SergioTermann&repo=dogfightEnv&show_icons=true" alt="dogfightEnv repo card"/></a>
 
-<br/><br/>
+<br/>
 
-<a href="https://harfang3d.com/"><img src="https://img.shields.io/badge/Powered_by-Harfang3D-2f7dd1?style=flat-square" alt="Harfang3D"/></a>
-<a href="https://github.com/JSBSim-Team/jsbsim"><img src="https://img.shields.io/badge/Powered_by-JSBSim-ff6b35?style=flat-square" alt="JSBSim"/></a>
-<a href="https://pytorch.org/"><img src="https://img.shields.io/badge/Powered_by-PyTorch-ee4c2c?style=flat-square&logo=pytorch&logoColor=white" alt="PyTorch"/></a>
+Powered by [Harfang3D](https://harfang3d.com/) · [JSBSim](https://github.com/JSBSim-Team/jsbsim) · [PyTorch](https://pytorch.org/)
 
-<br/><br/>
+<img src="https://api.star-history.com/svg?repos=SergioTermann/dogfightEnv&type=Date" alt="Star History" width="70%"/>
 
-<img src="https://api.star-history.com/svg?repos=SergioTermann/dogfightEnv&type=Date" alt="Star History" width="80%"/>
-
-[⬆ Back to top](#dogfightenv)
+[⬆ Back to top](#top)
 
 </div>
