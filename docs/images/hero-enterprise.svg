@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" role="img" aria-labelledby="title desc">
+  <title id="title">dogfightEnv autonomous air-combat simulation</title>
+  <desc id="desc">A dark enterprise-style aerial simulation banner with a fighter aircraft, telemetry traces and a clean title area.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071526"/><stop offset=".55" stop-color="#0d2941"/><stop offset="1" stop-color="#123c58"/></linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c6b8a" stop-opacity=".15"/><stop offset="1" stop-color="#04111f" stop-opacity=".85"/></linearGradient>
+    <linearGradient id="jet" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9f3f7"/><stop offset=".45" stop-color="#9bb6c5"/><stop offset="1" stop-color="#36576a"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#8dd9ef" stroke-opacity=".08"/></pattern>
+  </defs>
+  <rect width="1600" height="520" fill="url(#bg)"/><rect width="1600" height="520" fill="url(#grid)"/>
+  <path d="M0 356C260 332 430 370 690 347s474-37 910 6v167H0Z" fill="url(#sea)"/><path d="M0 356C260 332 430 370 690 347s474-37 910 6" fill="none" stroke="#72d3e8" stroke-opacity=".3"/>
+  <g opacity=".45" stroke="#63d9c3" fill="none"><path d="M1120 324C1280 275 1380 278 1570 236" stroke-width="2"/><path d="M1150 344C1300 310 1430 315 1580 290" stroke-width="1" stroke-dasharray="8 12"/><circle cx="1120" cy="324" r="7"/><circle cx="1120" cy="324" r="18" opacity=".35"/></g>
+  <g transform="translate(1175 214) rotate(-12)"><path d="M0 85 150 61 259 78 150 95Z" fill="#183649" stroke="#a6c2cf" stroke-width="2"/><path d="M64 75 140 0 157 2 137 76Z" fill="url(#jet)" stroke="#b5d0db" stroke-width="2"/><path d="M66 83 4 125 37 85Z" fill="#6d8999" stroke="#b5d0db" stroke-width="2"/><path d="M155 79 241 113 209 82Z" fill="#6d8999" stroke="#b5d0db" stroke-width="2"/><path d="M136 12 154 -28 166 7Z" fill="#8ce1ed" opacity=".8"/><path d="M132 78 20 147" stroke="#63d9c3" stroke-width="2" opacity=".8" filter="url(#glow)"/><path d="M160 86 298 129" stroke="#f1b35d" stroke-width="2" opacity=".7" filter="url(#glow)"/></g>
+  <g fill="#c7eef4" font-family="Segoe UI, Arial, sans-serif"><text x="82" y="116" font-size="18" letter-spacing="4" fill="#7fd6e5">AUTONOMOUS AIR-COMBAT SIMULATION</text><text x="78" y="190" font-size="68" font-weight="700">dogfightEnv</text><text x="82" y="238" font-size="23" fill="#a9c8d3">A controllable research environment for JSBSim, RL and LLM commanders.</text><text x="82" y="300" font-size="14" letter-spacing="2" fill="#73d9c7">PHYSICS  ·  NETWORK  ·  DECISION  ·  TRAINING</text></g>
+  <g transform="translate(78 398)" font-family="Consolas, monospace" font-size="13" fill="#8fb3c0"><rect width="520" height="54" rx="4" fill="#06121f" fill-opacity=".8" stroke="#2a566c"/><text x="18" y="22" fill="#63d9c3">$</text><text x="34" y="22">python -m training.train --algo ppo</text><text x="18" y="42" fill="#f1b35d">●</text><text x="34" y="42">deterministic 60 Hz simulation loop</text></g>
+  <rect x=".5" y=".5" width="1599" height="519" fill="none" stroke="#4d91a7" stroke-opacity=".45"/>
+</svg>

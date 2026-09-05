@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="650" viewBox="0 0 1280 650" role="img" aria-labelledby="title desc">
+<title id="title">Training and commander execution modes</title><desc id="desc">Training controls scene stepping. The commander observes and issues tasks while the sandbox runs freely. These modes use separate sessions, not concurrent clients.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" fill="#708187"/></marker></defs>
+<rect width="1280" height="650" fill="#FFFFFF"/>
+<g font-family="Segoe UI, Arial, sans-serif">
+<text x="48" y="45" font-size="18" fill="#007E75" font-weight="700">02 / EXECUTION MODEL</text>
+<text x="48" y="94" font-size="36" fill="#20292D" font-weight="700">Control the step. Or command the mission.</text>
+<text x="48" y="132" font-size="21" fill="#59696F" font-weight="400">Two workflows with different simulation-clock ownership.</text>
+<path d="M48 161H1232" fill="none" stroke="#D9E1E4" stroke-width="2"/>
+<text x="48" y="198" font-size="19" fill="#007E75" font-weight="700">A / RL TRAINING</text>
+<text x="48" y="232" font-size="21" fill="#59696F" font-weight="400">Client-driven scene updates in renderless mode</text>
+<rect x="48" y="255" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="68" y="294" font-size="25" fill="#007E75" font-weight="700">01  Observe</text>
+<text x="68" y="330" font-size="21" fill="#59696F" font-weight="400">State + reward</text>
+<path d="M320 305h29" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="352" y="255" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="372" y="294" font-size="25" fill="#007E75" font-weight="700">02  Act</text>
+<text x="372" y="330" font-size="21" fill="#59696F" font-weight="400">Policy output</text>
+<path d="M624 305h29" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="656" y="255" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="676" y="294" font-size="25" fill="#007E75" font-weight="700">03  Step</text>
+<text x="676" y="330" font-size="21" fill="#59696F" font-weight="400">update_scene</text>
+<path d="M928 305h29" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="960" y="255" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="980" y="294" font-size="25" fill="#007E75" font-weight="700">04  Learn</text>
+<text x="980" y="330" font-size="21" fill="#59696F" font-weight="400">Update + save</text>
+<text x="48" y="404" font-size="19" fill="#B45C37" font-weight="700">B / COMMANDER</text>
+<text x="48" y="438" font-size="21" fill="#59696F" font-weight="400">Free-running sandbox; commander does not drive scene updates</text>
+<rect x="48" y="461" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="68" y="500" font-size="25" fill="#B45C37" font-weight="700">01  Observe</text>
+<text x="68" y="536" font-size="21" fill="#59696F" font-weight="400">Battle snapshot</text>
+<path d="M320 511h29" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="352" y="461" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="372" y="500" font-size="25" fill="#B45C37" font-weight="700">02  Decide</text>
+<text x="372" y="536" font-size="21" fill="#59696F" font-weight="400">Rule or LLM</text>
+<path d="M624 511h29" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="656" y="461" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="676" y="500" font-size="25" fill="#B45C37" font-weight="700">03  Validate</text>
+<text x="676" y="536" font-size="21" fill="#59696F" font-weight="400">Names + targets</text>
+<path d="M928 511h29" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="960" y="461" width="272" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="980" y="500" font-size="25" fill="#B45C37" font-weight="700">04  Apply</text>
+<text x="980" y="536" font-size="21" fill="#59696F" font-weight="400">Changed tasks</text>
+<path d="M48 596H1232" fill="none" stroke="#D9E1E4" stroke-width="2"/>
+<text x="48" y="630" font-size="18" fill="#59696F" font-weight="700">ONE TCP CLIENT PER SANDBOX / RUN THESE WORKFLOWS IN SEPARATE SESSIONS</text>
+</g></svg>

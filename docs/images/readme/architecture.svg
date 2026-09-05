@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="940" viewBox="0 0 1280 940" role="img" aria-labelledby="title desc">
+<title id="title">dogfightEnv runtime architecture</title><desc id="desc">One external TCP client, either RL or commander, connects to the sandbox. Keyboard and gamepad inputs are local. JSBSim updates flight dynamics; Harfang renders the world. Logs and checkpoints are written by their owning clients.</desc>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto-start-reverse"><path d="M0 0L8 4L0 8Z" fill="#708187"/></marker></defs>
+<rect width="1280" height="940" fill="#FFFFFF"/>
+<g font-family="Segoe UI, Arial, sans-serif">
+<text x="48" y="45" font-size="18" fill="#007E75" font-weight="700">01 / SYSTEM ARCHITECTURE</text>
+<text x="48" y="94" font-size="36" fill="#20292D" font-weight="700">A shared simulation. Two external control modes.</text>
+<text x="48" y="132" font-size="21" fill="#59696F" font-weight="400">Process boundaries, control ownership and experiment outputs.</text>
+<path d="M48 161H1232" fill="none" stroke="#D9E1E4" stroke-width="2"/>
+<text x="48" y="208" font-size="18" fill="#59696F" font-weight="700">EXTERNAL CLIENT / SELECT ONE</text>
+<text x="624" y="208" font-size="18" fill="#59696F" font-weight="700">SANDBOX PROCESS</text>
+<rect x="48" y="230" width="432" height="170" rx="4" fill="#EFF8F6" stroke="#B8DAD4"/>
+<text x="72" y="266" font-size="17" fill="#007E75" font-weight="700">01A / LEARNING</text>
+<text x="72" y="304" font-size="26" fill="#20292D" font-weight="700">RL environment + policy</text>
+<text x="72" y="340" font-size="21" fill="#59696F" font-weight="400">Gym adapter / PPO / SAC / Rainbow</text>
+<text x="72" y="375" font-size="19" fill="#007E75" font-weight="400">Actions in; observations and rewards out</text>
+<rect x="48" y="424" width="432" height="170" rx="4" fill="#FCF4EE" stroke="#E5CBBC"/>
+<text x="72" y="460" font-size="17" fill="#B45C37" font-weight="700">01B / MISSION COMMAND</text>
+<text x="72" y="498" font-size="26" fill="#20292D" font-weight="700">Rule or LLM commander</text>
+<text x="72" y="534" font-size="21" fill="#59696F" font-weight="400">engage / patrol / retreat / hold</text>
+<text x="72" y="569" font-size="20" fill="#B45C37" font-weight="400">Poll state; apply changed assignments</text>
+<path d="M480 316H544V510H480" fill="none" stroke="#708187" stroke-width="2"/>
+<path d="M544 412H624" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="551" y="392" font-size="17" fill="#59696F" font-weight="700">TCP</text>
+<rect x="624" y="230" width="608" height="96" rx="4" fill="#EFF5FC" stroke="#C4D5E9"/>
+<text x="648" y="267" font-size="17" fill="#2361AC" font-weight="700">NETWORK INTERFACE</text>
+<text x="648" y="303" font-size="24" fill="#20292D" font-weight="700">JSON over TCP / host:50888 / one client</text>
+<path d="M920 326V354" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="624" y="354" width="608" height="116" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="648" y="393" font-size="27" fill="#20292D" font-weight="700">World state + aircraft control</text>
+<text x="648" y="431" font-size="22" fill="#59696F" font-weight="400">Missions / targets / built-in IA / autopilot</text>
+<path d="M920 470V504" fill="none" stroke="#708187" stroke-width="2"/>
+<path d="M774 531V504H1077V531" fill="none" stroke="#708187" stroke-width="2"/>
+<rect x="624" y="531" width="292" height="136" rx="4" fill="#EFF8F6" stroke="#B8DAD4"/>
+<text x="648" y="570" font-size="28" fill="#007E75" font-weight="700">JSBSim</text>
+<text x="648" y="608" font-size="22" fill="#20292D" font-weight="400">F-16 flight dynamics</text>
+<text x="648" y="643" font-size="20" fill="#59696F" font-weight="400">Fixed FDM step: 1/60 s</text>
+<rect x="940" y="531" width="292" height="136" rx="4" fill="#EFF5FC" stroke="#C4D5E9"/>
+<text x="964" y="570" font-size="28" fill="#2361AC" font-weight="700">Harfang3D</text>
+<text x="964" y="608" font-size="22" fill="#20292D" font-weight="400">3D world + cameras</text>
+<text x="964" y="643" font-size="20" fill="#59696F" font-weight="400">HUD + predicted paths</text>
+<text x="648" y="704" font-size="19" fill="#59696F" font-weight="400">Missiles retain the sandbox guidance / physics model.</text>
+<rect x="48" y="650" width="432" height="100" rx="4" fill="#F7F9FA" stroke="#D9E1E4"/>
+<text x="72" y="689" font-size="26" fill="#20292D" font-weight="700">Keyboard / Xbox gamepad</text>
+<text x="72" y="726" font-size="20" fill="#59696F" font-weight="400">Local input inside the sandbox process</text>
+<path d="M480 697H581V451H624" fill="none" stroke="#708187" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="7 6"/>
+<path d="M48 794H1232" fill="none" stroke="#D9E1E4" stroke-width="2"/>
+<text x="48" y="834" font-size="17" fill="#59696F" font-weight="700">EXPERIMENT OUTPUTS</text>
+<text x="48" y="876" font-size="23" fill="#007E75" font-weight="700">Training</text>
+<text x="48" y="910" font-size="21" fill="#59696F" font-weight="400">Checkpoints + metrics</text>
+<text x="480" y="876" font-size="23" fill="#B45C37" font-weight="700">Commander</text>
+<text x="480" y="910" font-size="21" fill="#59696F" font-weight="400">Decision log (JSONL)</text>
+<text x="900" y="876" font-size="23" fill="#2361AC" font-weight="700">Environment</text>
+<text x="900" y="910" font-size="21" fill="#59696F" font-weight="400">Tacview ACMI (1v1)</text>
+</g></svg>
