@@ -1,178 +1,286 @@
 # dogfightEnv
 
-> 面向强化学习与智能指挥研究的空战仿真环境：JSBSim 六自由度飞行动力学、Harfang3D 可视化、Gym 风格接口与可插拔任务指挥官。
+**Air-combat simulation for reinforcement learning and mission-level decision making.**
 
-<div align="center">
+dogfightEnv combines JSBSim six-degree-of-freedom flight dynamics, Harfang3D visualization, Gym-style environments, and a rule-based or LLM-powered mission commander. Train flight policies, evaluate tactical assignments, and inspect engagements in a shared 3D simulation.
 
-![dogfightEnv](docs/images/readme/cover.jpg)
+![dogfightEnv air-combat simulation](docs/images/readme/cover.jpg)
 
-**飞行动力学 · 学习智能体 · 任务指挥**
+[Quick Start](#quick-start) | [RL Training](#rl-training) | [Mission Commander](#mission-commander) | [Network Protocol](dogfight_sandbox_hg2/documentation_network.md) | [Issues](https://github.com/SergioTermann/dogfightEnv/issues)
 
-[English](README.en.md) · [网络协议](dogfight_sandbox_hg2/documentation_network.md) · [问题反馈](https://github.com/SergioTermann/dogfightEnv/issues)
+## Features
 
-</div>
+| Area | What is included |
+| --- | --- |
+| Flight dynamics | JSBSim 1.2.1, F-16 aerodynamics, afterburner, stability augmentation, and a fixed 1/60 s flight-dynamics step |
+| Visualization | Harfang3D ocean, terrain, clouds, HUD, multiple cameras, and flight-path prediction |
+| RL environments | Legacy Gym-style interfaces; the reference 1v1 environment exposes 25 observations and 5 continuous actions |
+| Training | Native PyTorch PPO, SAC, and Rainbow, with observation normalization, checkpoints, and JSONL metrics |
+| Mission command | Rule-based or OpenAI-compatible LLM decisions: `engage`, `patrol`, `retreat`, and `hold` |
+| Manual flight | Keyboard and Xbox gamepad controls, with environments for collecting expert demonstrations |
+| Experiment inspection | In-engine views, commander decision logs, and Tacview ACMI output from the 1v1 environment |
 
-## 项目定位
+## Architecture
 
-dogfightEnv 把一个可视化空战沙盒整理成可编程的实验平台。仿真核心负责世界状态、飞机、导弹与渲染；外部客户端负责学习或任务决策；双方通过统一的 JSON over TCP 协议交互。
+The sandbox owns the simulation state, aircraft, missiles, and rendering. An external Python client exchanges state and commands with it over JSON over TCP.
 
-适合以下工作：
+![Architecture showing the sandbox, local controls, and external clients](docs/images/readme/architecture.svg)
 
-- 训练连续动作或离散动作的空战策略
-- 评估飞行控制、导弹规避、目标选择与编队协同
-- 用规则引擎或 OpenAI 兼容模型做战术任务分配
-- 通过键盘 / Xbox 手柄飞行并采集专家演示
-- 在 3D 画面、JSONL 日志与 Tacview ACMI 中复盘实验
+**One sandbox instance accepts one TCP client at a time.** Choose either an RL session or a Commander session. Keyboard and gamepad input run locally inside the sandbox and do not occupy the network connection.
 
-## 能力概览
+![Execution flow for RL training and mission command](docs/images/readme/execution.svg)
 
-| 模块 | 能力 | 关键事实 |
-|---|---|---|
-| 飞行动力学 | JSBSim 1.2.1 | F-16 气动模型、F100-PW-229 发动机、加力与飞控 SAS；FDM 固定 1/60 s 步长 |
-| 仿真引擎 | Harfang3D | 海面 / 地形 / 云层、HUD、多镜头与实时轨迹预测 |
-| RL 环境 | Gym 风格 API | `oneVSone`、`twoVSone`、`ia_enemy`；参考环境为 25 维观测 / 5 维动作 |
-| 训练套件 | PyTorch 原生实现 | PPO、SAC、Rainbow；归一化、checkpoint、日志与评估入口统一 |
-| 任务指挥 | 外置 Commander | 规则引擎或 OpenAI 兼容 LLM；`engage / patrol / retreat / hold` |
-| 网络接口 | JSON over TCP | 默认 `host:50888`；一个沙盒进程一次接受一个 TCP 客户端 |
+RL clients advance the scene through `update_scene`. The Commander polls state and sends changed assignments while the sandbox runs freely; it does not control the simulation clock. Restart the sandbox when switching between these workflows.
 
-## 系统架构
+## Quick Start
 
-![系统架构](docs/images/readme/architecture.svg)
+### Prerequisites
 
-RL 与 Commander 是两种独立的外部控制模式。键盘和手柄属于沙盒进程内的本地输入，不占用 TCP 客户端。训练与指挥应在不同会话中运行。
+| Component | Requirement |
+| --- | --- |
+| Sandbox platform | Windows 10 or 11, 64-bit |
+| Sandbox runtime | Bundled embedded Python 3.8 and native libraries under `dogfight_sandbox_hg2/bin/` |
+| RL client | A separate Python environment with Gym, NumPy, PyTorch, Harfang, and PrettyTable |
+| Commander | Bundled Python or a compatible system Python; no third-party packages required |
+| Graphics and assets | A graphics-capable machine and the sandbox asset directories described below |
+| Training acceleration | CUDA is optional; CPU training is supported |
 
-## 运行模型
+**A Git clone does not include the full graphics assets.** Before launching, provision both `dogfight_sandbox_hg2/source/assets/` and `dogfight_sandbox_hg2/source/assets_compiled/`. These directories are excluded from Git. The [upstream sandbox releases](https://github.com/harfang3d/dogfight-sandbox-hg2/releases) and [upstream setup notes](dogfight_sandbox_hg2/README.md#how-to-run-dogfight) describe the original distribution; ensure any assets you supply match this checkout's scene references and runtime.
 
-![运行模型](docs/images/readme/execution.svg)
+Commands below use PowerShell. Start each workflow from the repository root unless a command explicitly changes directories.
 
-RL 环境在 renderless 模式下通过 `update_scene` 推进仿真步；Commander 只轮询状态和下发变化后的任务，不接管仿真时钟。这样可以分别测量策略训练和任务规划的行为。
+### 1. Start the sandbox
 
-## 快速开始
-
-### 环境要求
-
-| 项目 | 要求 |
-|---|---|
-| 操作系统 | Windows 10 / 11 |
-| 沙盒运行时 | 仓库自带嵌入式 Python 3.8、Harfang、JSBSim 与 numpy |
-| RL / Commander | 系统 Python 3.8+；训练额外需要 `torch>=2.0` |
-| GPU | 可选；CUDA 可加速训练 |
-| 资源文件 | `source/assets/` 与 `assets_compiled/` 未纳入 Git，需按项目分发方式准备 |
-
-### 1. 启动沙盒
+In a dedicated terminal:
 
 ```powershell
 cd dogfight_sandbox_hg2/source
 ..\bin\python\python.exe main.py auto_network mission=1
 ```
 
-`mission=1 / 2 / 3` 对应 1v1 / 2v2 / 3v3 网络任务。窗口左上角显示实际 `HOST / PORT`，默认端口为 `50888`。
+| Argument | Network mission |
+| --- | --- |
+| `mission=1` | 1v1 |
+| `mission=2` | 2v2 |
+| `mission=3` | 3v3 |
 
-### 2. 接入 Gym 环境
+Read the **HOST / PORT** shown in the upper-left corner of the sandbox window. The default port is `50888`. The server binds to the address resolved from the machine's hostname, so use the displayed address even when the client runs on the same machine.
+
+### 2. Prepare the RL client
+
+In a second terminal at the repository root, create or activate your Python environment, then install:
+
+```powershell
+python -m pip install -r requirements-train.txt
+python -m pip install harfang prettytable
+```
+
+`requirements-train.txt` lists PyTorch, NumPy, and Gym. The root environment modules also import Harfang and PrettyTable, so these are required for the RL client even when rendering is disabled. Choose a Python version supported by all of these packages; the embedded sandbox interpreter is separate from the training environment.
+
+For a Commander-only session, skip the RL dependencies and continue to [Mission Commander](#mission-commander).
+
+### 3. Connect to the 1v1 environment
+
+Run this Python example from the repository root. Replace `<SANDBOX_HOST>` with the address shown in the sandbox:
 
 ```python
 from oneVSoneEnv import oneVSoneEnv
+from training.wrapper import EnvAdapter
 
-env = oneVSoneEnv(host="192.168.1.103", port="50888", rendering=True)
+env = EnvAdapter(
+    oneVSoneEnv(host="<SANDBOX_HOST>", port="50888", rendering=True),
+    normalize=False,
+)
 obs = env.reset()
-action = env.action_space.sample()  # [roll, pitch, yaw, thrust, fire]
-obs, reward, done, info = env.step(action)
+
+for _ in range(100):
+    action = env.action_space.sample()  # [roll, pitch, yaw, thrust, fire]
+    obs, reward, done, info = env.step(action)
+    if done:
+        obs = env.reset()
 ```
 
-环境文件位于仓库根目录：`oneVSoneEnv.py`、`twoVStwo.py`、`IA_enemy_env.py`、`dogfightEnv.py`、`human_expert_env.py`。
+The environments use the **legacy Gym API**: `reset()` returns an observation and `step()` returns `(obs, reward, done, info)`. They do not implement the Gymnasium reset/step contract. `EnvAdapter` converts observations to NumPy arrays and performs a neutral step after reset to refresh the initial state.
 
-### 3. 启动任务指挥官
+## RL Training
 
-在第二个终端执行：
+Start the sandbox first. In your client terminal, set the displayed host and run **one** training command:
 
 ```powershell
-cd llm_commander
-..\dogfight_sandbox_hg2\bin\python\python.exe commander.py
+$sandboxHost = "<SANDBOX_HOST>"
+
+python -m training.train --algo ppo --env oneVSone --host $sandboxHost --timesteps 500000
+python -m training.train --algo sac --env oneVSone --host $sandboxHost --timesteps 1000000
+python -m training.train --algo rainbow --env oneVSone --host $sandboxHost --timesteps 1000000
 ```
 
-默认配置使用无外部依赖的规则引擎。常用参数：
+| Algorithm | Action representation | Implementation |
+| --- | --- | --- |
+| PPO | Continuous | Gaussian policy, generalized advantage estimation, clipped objective |
+| SAC | Continuous | Twin Q networks, automatic entropy temperature, soft target updates |
+| Rainbow | Discrete grid over continuous controls | n-step returns, Double Q, dueling networks, NoisyNet, prioritized replay, C51 |
+
+The training CLI registers these environment names:
+
+| CLI name | Implementation |
+| --- | --- |
+| `oneVSone` | [oneVSoneEnv.py](oneVSoneEnv.py) |
+| `twoVSone` | [twoVStwo.py](twoVStwo.py) |
+| `ia_enemy` | [IA_enemy_env.py](IA_enemy_env.py) |
+
+The `twoVSone` CLI name is intentional in the current registry, despite its implementation filename. Use `oneVSone` with `mission=1` for the introductory workflow; other wrappers have their own aircraft assumptions.
+
+### Options and checkpoints
+
+| Option | Purpose |
+| --- | --- |
+| `--host`, `--port` | Select the sandbox address; always set the host for your machine |
+| `--render` | Request the 3D view during training; omitted by default |
+| `--device cpu` or `--device cuda` | Select the training device; automatic selection is the default |
+| `--seed 1` | Set the NumPy and PyTorch seed |
+| `--set lr=1e-4 gamma=0.995` | Override algorithm hyperparameters |
+| `--name experiment_01` | Set a run name and output subdirectory |
+| `--no-normalize` | Disable observation normalization |
+
+Outputs are written to `checkpoints/<algo>_<env>/` by default:
+
+```text
+checkpoints/ppo_oneVSone/
+    model_final.pt       # Final policy checkpoint
+    extra_final.pt       # Environment, normalization, and action-grid metadata
+    model_best.pt        # Best recent training return, when recorded
+    extra_best.pt        # Metadata paired with the best checkpoint
+    model_<step>.pt       # Periodic checkpoint
+    extra_<step>.pt       # Matching metadata
+    log.jsonl            # Episode returns, lengths, throughput, and update metrics
+```
+
+Keep each `model_*.pt` with its matching `extra_*.pt`. The best checkpoint is selected from recent training returns at logging intervals; it is not a separate evaluation score and may be absent in short runs.
+
+To watch a completed run in a fresh sandbox session:
 
 ```powershell
-python commander.py --dry-run       # 只打印决策，不下发命令
-python commander.py --once          # 只执行一轮决策
-python commander.py --duration 60   # 运行 60 秒后退出
+python -m training.enjoy --model checkpoints/ppo_oneVSone/model_final.pt --host $sandboxHost --episodes 3
 ```
 
-要启用 LLM，将 `llm_commander/config.json` 的 `engine` 设为 `llm` 并填写 `llm.api_key`。`api_base` 使用 OpenAI 兼容的 chat completions 接口，失败时自动保留上一轮方案。决策写入 `llm_commander/decisions.jsonl`。
+## Mission Commander
 
-## RL 训练套件
-
-安装训练依赖：
+Use a fresh sandbox session, for example with `mission=2` for 2v2. Set `host` and `port` in [llm_commander/config.json](llm_commander/config.json) to the displayed server address, then run from the repository root:
 
 ```powershell
-pip install -r requirements-train.txt
+.\dogfight_sandbox_hg2\bin\python\python.exe llm_commander/commander.py
 ```
 
-启动沙盒后，在另一个终端运行：
+The default `rule` engine requires no API key. It assigns `engage`, `patrol`, `retreat`, or `hold` tasks to aircraft on the configured side.
+
+| Configuration | Meaning |
+| --- | --- |
+| `engine` | `rule` or `llm` |
+| `side` | `allies` or `ennemies`; preserve the spelling used by the protocol |
+| `decision_period_s` | Decision interval; default `10` seconds |
+| `poll_interval_s` | State polling interval; default `0.5` seconds |
+| `blue_ia` | Enable the built-in AI for the opposing blue side when commanding `ennemies` |
+
+The CLI also accepts `--once` for a single decision cycle, `--duration 60` for a timed session, and `--config path/to/config.json` for an alternate configuration. `--dry-run` skips applying the commander's task assignments, but still connects to the sandbox; configured opposing-side AI activation can still occur during connection.
+
+### Use an LLM
+
+In the Commander configuration:
+
+1. Set `engine` to `llm`.
+2. Set `llm.api_base` to the **full OpenAI-compatible chat completions URL**, including the endpoint path.
+3. Set `llm.api_key` and `llm.model` for your provider.
+
+An empty API key falls back to the rule engine. Network, API, or parsing failures retain the previous plan. Decision records are written to `llm_commander/decisions.jsonl`.
+
+## Physics and Visualization
+
+Configure the sandbox in [dogfight_sandbox_hg2/config.json](dogfight_sandbox_hg2/config.json):
+
+| Setting | Default | Purpose |
+| --- | --- | --- |
+| `Physics.engine` | `jsbsim` | Select `jsbsim` or the original `legacy` physics |
+| `FlightPrediction.enabled` | `true` | Display predicted flight paths |
+| `FlightPrediction.horizon_s` | `10` | Prediction horizon in seconds |
+| `FlightPrediction.steps` | `20` | Prediction sampling steps |
+
+All current aircraft types share the JSBSim F-16 aerodynamic data. Their different visual models do not imply distinct flight dynamics. See [jsbsim_flight_model.py](dogfight_sandbox_hg2/source/jsbsim_flight_model.py) for model mappings and control conventions. Missiles retain the sandbox's proportional-navigation model.
+
+![In-engine views of mission assignments, flight prediction, external flight, and the cockpit](docs/images/readme/simulation.jpg)
+
+### Controls
+
+| Control | Keys |
+| --- | --- |
+| Pitch / roll | Arrow keys |
+| Increase / decrease throttle | `Home` / `End` |
+| Toggle afterburner | `Space` |
+| Fire gun / missile | `Enter` / `F1` |
+| Select next target / toggle landing gear | `T` / `G` |
+| Increase / decrease airbrake | `B` / `N` |
+| Increase / decrease flaps | `C` / `V` |
+| Built-in AI / autopilot / easy steering | `I` / `A` / `E` |
+| Rear / front / left / right view | Numpad `2` / `8` / `4` / `6` |
+| Satellite / cockpit / next tracked aircraft | Numpad `5` / `3` / `1` |
+| Decrease / increase field of view | `Insert` / `PageUp` |
+
+See the [English gamepad mapping](docs/images/gamepad_mapping_en.svg) for controller bindings.
+
+## Repository Layout
+
+```text
+dogfightEnv/
+    dogfight_sandbox_hg2/
+        bin/                      # Embedded Windows runtime and native libraries
+        source/                   # Simulation, physics, rendering, and network server
+        network_client_example/   # Python TCP client and examples
+        tools/                    # Sandbox integration checks
+        config.json               # Graphics, physics, and prediction settings
+    training/                     # Algorithms, wrappers, training, and playback
+    llm_commander/                 # Commander, tacticians, and configuration
+    docs/                         # Diagrams, screenshots, and artwork tools
+    oneVSoneEnv.py                 # Reference 1v1 environment
+    twoVStwo.py                    # Wrapper registered as twoVSone
+    IA_enemy_env.py                # AI-opponent environment
+    human_expert_env.py            # Expert-demonstration environment
+    requirements-train.txt         # Core training dependencies
+```
+
+## Validation
+
+Run the algorithm tests from the repository root with your training Python environment. These tests do not require a sandbox:
 
 ```powershell
-python -m training.train --algo ppo --env oneVSone --timesteps 500000
-python -m training.train --algo sac --env oneVSone --timesteps 1000000
-python -m training.train --algo rainbow --env oneVSone --timesteps 1000000
+python -m training.tests.test_algos_toy
 ```
 
-加载 checkpoint 观看：
+The integration checks require the sandbox runtime and assets. Run them separately:
 
-```powershell
-python -m training.enjoy --model checkpoints/ppo_oneVSone/model_best.pt --episodes 3
-```
+| Check | Command from the repository root | Setup |
+| --- | --- | --- |
+| Flight dynamics | `.\dogfight_sandbox_hg2\bin\python\python.exe dogfight_sandbox_hg2/tools/test_jsbsim_physics.py` | Start a 1v1 sandbox first; set `$env:DOGFIGHT_HOST` and optionally `$env:DOGFIGHT_PORT` |
+| Commander | `.\dogfight_sandbox_hg2\bin\python\python.exe dogfight_sandbox_hg2/tools/test_llm_commander.py` | Starts its own 2v2 sandbox; uses the host and port in the Commander config |
+| Training smoke test | `python dogfight_sandbox_hg2/tools/test_training_smoke.py --host $sandboxHost` | Starts its own 1v1 sandbox; requires the RL client dependencies |
 
-训练产物写入 `checkpoints/<algo>_<env>/`：`model_best.pt`、`model_final.pt`、归一化状态和 `log.jsonl`。使用 `--set key=value` 覆盖超参数，使用 `--device cpu/cuda` 指定设备。
+Close existing sandbox instances before running checks that launch their own server. The Commander test replaces `decisions.jsonl`; the training smoke test resets `checkpoints/_smoke/`.
 
-| 算法 | 动作空间 | 实现要点 |
-|---|---|---|
-| PPO | 连续 Box | GAE、clip objective、高斯策略 |
-| SAC | 连续 Box | Twin Q、自动温度、软更新 |
-| Rainbow | 离散网格 | n-step、Double Q、Dueling、NoisyNet、PER、C51 |
+## Troubleshooting and Limitations
 
-## 物理与预测
+| Symptom or constraint | What to check |
+| --- | --- |
+| Client waits indefinitely for a connection | Start a network mission and use the displayed host and port. Check firewall access and whether another client occupies the connection. |
+| Sandbox fails to load scenes or textures | Confirm both asset directories are populated and launch `main.py` from `dogfight_sandbox_hg2/source/`. |
+| RL import fails for `harfang` or `prettytable` | Install the additional client packages in the same Python environment used for training. |
+| Code expects Gymnasium return values | Use the documented legacy Gym contract or provide an explicit adapter. |
+| No `model_best.pt` after a short run | Use `model_final.pt`; best-model saves depend on completed episodes and logging intervals. |
+| Commander and training cannot connect together | Run separate sessions or separate sandbox instances with distinct ports. |
 
-- 所有机型目前映射到 JSBSim F-16 数据；映射表见 `dogfight_sandbox_hg2/source/jsbsim_flight_model.py`。
-- `dogfight_sandbox_hg2/config.json` 可在 `jsbsim` 与 `legacy` 物理引擎之间切换。
-- 轨迹预测默认外推未来 10 秒，配置项为 `FlightPrediction.enabled / horizon_s / steps`。
-- 导弹保留沙盒原有比例导引逻辑；`get_plane_state` 增加 `physics_engine` 字段。
+The 1v1 environment writes Tacview-formatted data to `trained_epoch_0.txt` in the working directory and resets the file on episode reset. Preserve an episode's output before starting another if you need it for analysis.
 
-## 仿真画面
+Current development priorities include distributing complete assets, supporting concurrent external clients, adding aircraft-specific JSBSim models, and defining standardized evaluation scenarios. These are planned improvements, not current capabilities.
 
-![仿真画面](docs/images/readme/simulation.jpg)
+## License and Acknowledgements
 
-## 操控与视角
+The sandbox in `dogfight_sandbox_hg2/` is derived from [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) and is covered by its [GPL-3.0 license](dogfight_sandbox_hg2/LICENSE).
 
-键盘控制：`↑ ↓ ← →` 俯仰 / 滚转，`Home / End` 油门，`Space` 加力，`Enter` 机炮，`F1` 导弹，`T` 换目标，`G` 起落架，`B / N` 减速板，`C / V` 襟翼，`I` IA，`A` 自动驾驶，`E` 简化操纵。
-
-小键盘视角：`2 / 8 / 4 / 6` 尾后 / 前方 / 左侧 / 右侧，`5` 卫星，`3` 座舱，`1` 切换跟拍目标，`Insert / PageUp` 调整视野。完整手柄映射见 [gamepad_mapping.svg](docs/images/gamepad_mapping.svg)。
-
-## 测试
-
-```powershell
-cd dogfight_sandbox_hg2
-bin\python\python.exe tools/test_jsbsim_physics.py
-bin\python\python.exe tools/test_llm_commander.py
-python tools/test_training_smoke.py
-```
-
-此外可运行 `python -m training.tests.test_algos_toy`，在无沙盒条件下验证三种算法的收敛与 checkpoint 往返。
-
-## 工程边界
-
-- 单个沙盒进程一次只接受一个 TCP 客户端，因此 Commander 与 RL 环境不能同时连接同一实例。
-- 机型暂时共用 F-16 气动数据，其他机型数据待补充。
-- 大型模型与贴图目录不进入 Git，建议使用 Git LFS 或独立资源包分发。
-
-## 开发路线
-
-- [ ] 通过 Git LFS 提供完整资源包
-- [ ] 支持 Commander 与 RL 客户端并行连接
-- [ ] 增加更多机型的 JSBSim 气动数据
-- [ ] 增加标准化评测任务与可复现实验配置
-
-## 许可证与致谢
-
-`dogfight_sandbox_hg2/` 源自 [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2)，使用 GPL-3.0。感谢 Harfang Technologies 与 [mrwangyou/DBRL](https://github.com/mrwangyou/DBRL)。
-
-本项目使用 [Harfang3D](https://harfang3d.com/)、[JSBSim](https://github.com/JSBSim-Team/jsbsim) 与 [PyTorch](https://pytorch.org/)。
+Thanks to Harfang Technologies and [mrwangyou/DBRL](https://github.com/mrwangyou/DBRL). This project builds on [Harfang3D](https://harfang3d.com/), [JSBSim](https://github.com/JSBSim-Team/jsbsim), and [PyTorch](https://pytorch.org/).
