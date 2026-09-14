@@ -6,7 +6,7 @@ dogfightEnv combines JSBSim six-degree-of-freedom flight dynamics, Harfang3D vis
 
 ![dogfightEnv air-combat simulation](docs/images/readme/cover.jpg)
 
-[Quick Start](#quick-start) | [RL Training](#rl-training) | [Mission Commander](#mission-commander) | [Network Protocol](dogfight_sandbox_hg2/documentation_network.md) | [Issues](https://github.com/SergioTermann/dogfightEnv/issues)
+[Quick Start](#quick-start) | [RL Training](#rl-training) | [Tacview Analysis](#tacview-flight-analysis) | [Mission Commander](#mission-commander) | [Network Protocol](dogfight_sandbox_hg2/documentation_network.md) | [Issues](https://github.com/SergioTermann/dogfightEnv/issues)
 
 ## Features
 
@@ -18,7 +18,7 @@ dogfightEnv combines JSBSim six-degree-of-freedom flight dynamics, Harfang3D vis
 | Training | Native PyTorch PPO, SAC, and Rainbow, with observation normalization, checkpoints, and JSONL metrics |
 | Mission command | Rule-based or OpenAI-compatible LLM decisions: `engage`, `patrol`, `retreat`, and `hold` |
 | Manual flight | Keyboard and Xbox gamepad controls, with environments for collecting expert demonstrations |
-| Experiment inspection | In-engine views, commander decision logs, and Tacview ACMI output from the 1v1 environment |
+| Experiment inspection | In-engine views, commander decision logs, and [Tacview ACMI recordings](#tacview-flight-analysis) from the 1v1 environment |
 
 ## Architecture
 
@@ -163,6 +163,26 @@ To watch a completed run in a fresh sandbox session:
 python -m training.enjoy --model checkpoints/ppo_oneVSone/model_final.pt --host $sandboxHost --episodes 3
 ```
 
+## Tacview Flight Analysis
+
+Every step of the reference 1v1 environment is recorded as a [Tacview](https://www.tacview.net/) ACMI flight data file. Training runs, `training.enjoy` playback, and the Quick Start sample all produce it.
+
+| Item | Value |
+| --- | --- |
+| Output file | `trained_epoch_0.txt`, written to the working directory of the client process |
+| Format | ACMI text, `FileType=text/acmi/tacview`, `FileVersion=2.1` |
+| Recorded objects | Red and blue F-16s, Mica missile tracks, explosion events, and a static ground reference object |
+| Frame rate | One ACMI frame per environment `step()` |
+| Coordinates | Sandbox XY positions converted to GPS coordinates around a fixed reference point, so tracks appear on the globe |
+
+To replay an engagement in Tacview:
+
+1. Copy `trained_epoch_0.txt` out of the working directory when the episode ends. Each `reset()` truncates the file, so the copy is the only durable record of the episode.
+2. Open the copy in Tacview; the free edition is sufficient for these recordings. Rename it to `episode.acmi.txt` if you prefer the conventional extension.
+3. Scrub the timeline to inspect rolls, missile launches, and termination geometry.
+
+Object names, coalitions, and radar properties in the recording are fixed labels applied for readability in Tacview. Only position, altitude, and attitude come from the simulation; recorded Mach numbers are placeholders. Only `oneVSoneEnv.py` writes ACMI output — the other registered environments do not record.
+
 ## Mission Commander
 
 Use a fresh sandbox session, for example with `mission=2` for 2v2. Set `host` and `port` in [llm_commander/config.json](llm_commander/config.json) to the displayed server address, then run from the repository root:
@@ -274,8 +294,7 @@ Close existing sandbox instances before running checks that launch their own ser
 | Code expects Gymnasium return values | Use the documented legacy Gym contract or provide an explicit adapter. |
 | No `model_best.pt` after a short run | Use `model_final.pt`; best-model saves depend on completed episodes and logging intervals. |
 | Commander and training cannot connect together | Run separate sessions or separate sandbox instances with distinct ports. |
-
-The 1v1 environment writes Tacview-formatted data to `trained_epoch_0.txt` in the working directory and resets the file on episode reset. Preserve an episode's output before starting another if you need it for analysis.
+| Tacview recording lost after the next episode | Copy `trained_epoch_0.txt` before the next `reset()` truncates it; see [Tacview Flight Analysis](#tacview-flight-analysis). |
 
 Current development priorities include distributing complete assets, supporting concurrent external clients, adding aircraft-specific JSBSim models, and defining standardized evaluation scenarios. These are planned improvements, not current capabilities.
 
